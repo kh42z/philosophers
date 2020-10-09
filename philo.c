@@ -1,43 +1,37 @@
 #include "philo.h"
 
-int 	is_dead(t_philo *this) {
-	struct timeval current_time;
+int 	is_dead(t_philo *this)
+{
+	long c;
 
-	gettimeofday(&current_time, NULL);
-
-	long c = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
-	long p = this->started_at.tv_sec * 1000 + this->started_at.tv_usec / 1000;
-
-	if (c - p > this->args.tt_die)
+	c = get_time_ms();
+	if (c - this->ate_at > this->args.tt_die)
 		return (1);
 	return (0);
 }
 
 void 	do_stuff(t_philo *this) {
-	struct timeval	current;
 	int 			err;
-	gettimeofday(&current, NULL);
-	print_timestamp(&current);
-	write(STDOUT_FILENO, " ", 1);
-	print_number((suseconds_t)this->id);
+
 	if (this->action == EATING) {
-		this->started_at = current;
-		write(STDOUT_FILENO, " is eating ", 11);
+		pthread_mutex_lock(&this->left->tid);
+		pthread_mutex_lock(&this->right->tid);
+		this->ate_at = get_time_ms();
+		print_log(this, " is eating\n");
 		if ((err = usleep(this->args.tt_eat * 1000)) != 0)
-			printf("ERRROR %s\n", strerror(err));
-		print_current_timestamp();
-		write(STDOUT_FILENO, "\n", 1);
+			printf("ERROR %s\n", strerror(err));
+		pthread_mutex_unlock(&this->left->tid);
+		pthread_mutex_unlock(&this->right->tid);
 		if (this->args.nb_of_must_eat > 0)
 			this->args.nb_of_must_eat--;
 	}
 	if (this->action == SLEEPING) {
-		write(STDOUT_FILENO, " is sleeping\n", 13);
+		print_log(this, " is sleeping\n");
 		if ((err = usleep(this->args.tt_sleep * 1000)) != 0)
 			printf("ERRROR %s\n", strerror(err));
-		print_current_timestamp();
 	}
 	if (this->action == THINKING) {
-		write(STDOUT_FILENO, " is thinking\n", 13);
+		print_log(this, " is thinking\n");
 	}
 }
 
@@ -45,20 +39,46 @@ void 	*do_next(void *v) {
 
 	t_philo *this;
 	this = (t_philo*)v;
-	gettimeofday(&this->started_at, NULL);
+	this->ate_at = get_time_ms();
 	while (is_dead(this) == 0) {
-		print_diff(this);
 		this->action++;
 		if (this->action > 2)
 			this->action = 0;
 		do_stuff(this);
 	}
-	print_diff(this);
-	print_current_timestamp();
-	write(STDOUT_FILENO, " ", 1);
-	print_number(this->id);
-	write(STDOUT_FILENO, " just died\n", 11);
 	return (this);
 }
 
 
+int 			spawn_philos(t_args *args, t_philos *philos, t_forks *forks, pthread_mutex_t *mutex)
+{
+	int i;
+	int err;
+
+	philos->size = 0;
+	philos->philo = malloc(sizeof(t_philo*) * args->nb_of_philos);
+	if (!philos->philo)
+		return (-1);
+	while (philos->size < args->nb_of_philos)
+	{
+		i = philos->size;
+		philos->philo[i] = malloc(sizeof(t_philo));
+		if (philos->philo[i] == NULL) {
+			return (-1);
+		}
+		memset(philos->philo[i], 0, sizeof(t_philo));
+		philos->philo[i]->mutex = mutex;
+		philos->philo[i]->args = *args;
+		philos->philo[i]->id = i;
+		philos->philo[i]->left = forks->fork[i];
+		philos->philo[i]->started_at = get_time_ms();
+		if (i + 1 == args->nb_of_philos)
+			philos->philo[i]->right = forks->fork[0];
+		else
+			philos->philo[i]->right = forks->fork[i + 1];
+		if ((err = pthread_create(&philos->philo[i]->pid, NULL, do_next, philos->philo[i])) != 0)
+			return (err);
+		philos->size++;
+	}
+	return (0);
+}

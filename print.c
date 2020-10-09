@@ -1,4 +1,3 @@
-#include <unistd.h>
 #include "philo.h"
 
 static  size_t 		power10(size_t power)
@@ -30,11 +29,10 @@ static size_t 	number_size(suseconds_t usec){
 	return (t);
 }
 
-void 	print_number(suseconds_t usec)
+void 	print_number(suseconds_t usec, char *print)
 {
 	size_t			t;
 	size_t 			c;
-	char 			print[128];
 
 	t = number_size(usec);
 	c = t;
@@ -44,33 +42,27 @@ void 	print_number(suseconds_t usec)
 		--t;
 	}
 	print[c] = '\0';
-	write(1, print, c);
+	write(STDOUT_FILENO, print, c);
 }
 
-void 	print_timestamp(struct timeval *t)
-{
-	print_number(t->tv_sec);
-	write(STDOUT_FILENO, ":", 1);
-	print_number(t->tv_usec / 1000);
+
+void 	print_log(t_philo *this, char *s){
+	size_t 					i;
+	char 			print[128];
+
+	i = 0;
+	while (s[i])
+		i++;
+	pthread_mutex_lock(this->mutex);
+	write(STDOUT_FILENO, "> ", 2);
+	print_number(get_time_ms() - this->started_at, &print);
+	write(STDOUT_FILENO, " (", 2);
+	print_number(this->id, &print);
+	write(STDOUT_FILENO, ") ", 2);
+	write(STDOUT_FILENO, s, i);
+	pthread_mutex_unlock(this->mutex);
 }
 
-void 	print_current_timestamp()
-{
-	struct timeval timeval;
-	gettimeofday(&timeval, NULL);
-	print_timestamp(&timeval);
-}
 
-void	print_diff(t_philo *this){
 
-	struct timeval current_time;
-	gettimeofday(&current_time, NULL);
-	long c = current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
-	long p = this->started_at.tv_sec * 1000 + this->started_at.tv_usec / 1000;
-
-	write(STDOUT_FILENO, "DIFF: ", 6);
-	print_number(c - p);
-	write(STDOUT_FILENO, "\n", 1);
-
-}
 
