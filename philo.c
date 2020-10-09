@@ -70,6 +70,7 @@ int 			spawn_philos(t_args *args, t_philos *philos, t_forks *forks, pthread_mute
 		philos->philo[i]->mutex = mutex;
 		philos->philo[i]->args = *args;
 		philos->philo[i]->id = i;
+		philos->philo[i]->action = THINKING;
 		philos->philo[i]->left = forks->fork[i];
 		philos->philo[i]->started_at = get_time_ms();
 		if (i + 1 == args->nb_of_philos)
