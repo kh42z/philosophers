@@ -53,14 +53,14 @@ void 	print_log(t_philo *this, char *s){
 	i = 0;
 	while (s[i])
 		i++;
-	pthread_mutex_lock(this->mutex);
+	pthread_mutex_lock(this->print);
 	write(STDOUT_FILENO, "> ", 2);
-	print_number(get_time_ms() - this->started_at, &print);
+	print_number(get_time_ms() - this->started_at, (char *)print);
 	write(STDOUT_FILENO, " (", 2);
-	print_number(this->id, &print);
-	write(STDOUT_FILENO, ") ", 2);
+	print_number(this->id, (char *)print);
+	write(STDOUT_FILENO, ")", 2);
 	write(STDOUT_FILENO, s, i);
-	pthread_mutex_unlock(this->mutex);
+	pthread_mutex_unlock(this->print);
 }
 
 
