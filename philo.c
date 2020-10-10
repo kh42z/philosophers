@@ -15,13 +15,15 @@ void 	do_stuff(t_philo *this) {
 
 	if (this->action == EATING) {
 		pthread_mutex_lock(&this->left->tid);
+		print_log(this, " has taken a left fork\n");
 		pthread_mutex_lock(&this->right->tid);
+		print_log(this, " has taken a right fork\n");
 		this->ate_at = get_time_ms();
 		print_log(this, " is eating\n");
 		if ((err = usleep(this->args.tt_eat * 1000)) != 0)
-			printf("ERROR %s\n", strerror(err));
-		pthread_mutex_unlock(&this->left->tid);
+			print_log(this, " USLEEP FAILED");
 		pthread_mutex_unlock(&this->right->tid);
+		pthread_mutex_unlock(&this->left->tid);
 		if (this->args.nb_of_must_eat > 0)
 			this->args.nb_of_must_eat--;
 	}
@@ -38,25 +40,59 @@ void 	do_stuff(t_philo *this) {
 void 	*do_next(void *v) {
 
 	t_philo *this;
+	int 	over;
+
+	over = 0;
 	this = (t_philo*)v;
 	this->ate_at = get_time_ms();
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)  {
+		pthread_mutex_lock(&this->end->tid);
+		if (this->end->is_over == 1)
+			over = 1;
+		pthread_mutex_unlock(&this->end->tid);
+		if (over == 1)
+			break ;
 		this->action++;
 		if (this->action > 2)
 			this->action = 0;
 		do_stuff(this);
 	}
-	print_log(this, " is dead\n");
-	pthread_mutex_lock(&this->end->tid);
-	this->end->is_over = 1;
-	pthread_mutex_unlock(&this->end->tid);
+	if (over == 0)
+	{
+		pthread_mutex_lock(&this->end->tid);
+		this->end->is_over = 1;
+		pthread_mutex_unlock(&this->end->tid);
+		if (this->args.nb_of_must_eat != 0)
+			print_log(this, " is dead\n");
+	}
 	return (this);
+}
+
+t_philo 		*new_philo(t_args *args, t_forks *forks, pthread_mutex_t *mutex, t_end *end, unsigned int i)
+{
+	t_philo *p;
+
+	p = malloc(sizeof(t_philo));
+	if (p == NULL)
+		return (NULL);
+	memset(p, 0, sizeof(t_philo));
+	p->print = mutex;
+	p->end = end;
+	p->args = *args;
+	p->id = i;
+	p->action = THINKING;
+	p->left = forks->items[i];
+	p->started_at = get_time_ms();
+	if (i + 1 == args->nb_of_philos)
+		p->right = forks->items[0];
+	else
+		p->right = forks->items[i + 1];
+	return (p);
 }
 
 int 			spawn_philos(t_args *args, t_philos *philos, t_forks *forks, pthread_mutex_t *mutex, t_end *end)
 {
 	int i;
-	int err;
 
 	philos->size = 0;
 	philos->philo = malloc(sizeof(t_philo*) * args->nb_of_philos);
@@ -65,25 +101,11 @@ int 			spawn_philos(t_args *args, t_philos *philos, t_forks *forks, pthread_mute
 	while (philos->size < args->nb_of_philos)
 	{
 		i = philos->size;
-		philos->philo[i] = malloc(sizeof(t_philo));
+		philos->philo[i] = new_philo(args, forks, mutex, end, i);
 		if (philos->philo[i] == NULL) {
 			delete_philos(philos);
 			return (-1);
 		}
-		memset(philos->philo[i], 0, sizeof(t_philo));
-		philos->philo[i]->print = mutex;
-		philos->philo[i]->end = end;
-		philos->philo[i]->args = *args;
-		philos->philo[i]->id = i;
-		philos->philo[i]->action = THINKING;
-		philos->philo[i]->left = forks->items[i];
-		philos->philo[i]->started_at = get_time_ms();
-		if (i + 1 == args->nb_of_philos)
-			philos->philo[i]->right = forks->items[0];
-		else
-			philos->philo[i]->right = forks->items[i + 1];
-		if ((err = pthread_create(&philos->philo[i]->pid, NULL, do_next, philos->philo[i])) != 0)
-			return (err);
 		philos->size++;
 	}
 	return (0);
@@ -96,4 +118,5 @@ void 		delete_philos(t_philos *philos)
 		free(philos->philo[philos->size - 1]);
 		--philos->size;
 	}
+	free(philos->philo);
 }

@@ -7,6 +7,7 @@ void 				delete_forks(t_forks *forks)
 		free(forks->items[forks->size - 1]);
 		forks->size--;
 	}
+	free(forks->items);
 }
 
 int		new_forks(t_forks *f, unsigned int number)
@@ -23,6 +24,7 @@ int		new_forks(t_forks *f, unsigned int number)
 			delete_forks(f);
 			return (1);
 		}
+		pthread_mutex_init(&f->items[f->size]->tid, NULL);
 		f->size++;
 	}
 	return (0);

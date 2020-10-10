@@ -9,9 +9,9 @@
 #include <string.h>
 
 enum philo_actions {
+	THINKING,
 	EATING,
 	SLEEPING,
-	THINKING,
 };
 
 typedef struct			s_args {
@@ -63,6 +63,8 @@ long 	get_time_ms();
 void 	print_log(t_philo *this, char *s);
 int		parse_args(t_args  *args, int argc, char *argv[]);
 
+void				wait_philos(t_philos *p);
+int					awake_philos(t_philos *p);
 int 				new_forks(t_forks *forks, unsigned int number);
 int		 			spawn_philos(t_args *args, t_philos *philos, t_forks *forks, pthread_mutex_t *mutex, t_end *end);
 void 				delete_forks(t_forks *forks);

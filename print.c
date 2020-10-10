@@ -58,7 +58,7 @@ void 	print_log(t_philo *this, char *s){
 	print_number(get_time_ms() - this->started_at, (char *)print);
 	write(STDOUT_FILENO, " (", 2);
 	print_number(this->id, (char *)print);
-	write(STDOUT_FILENO, ")", 2);
+	write(STDOUT_FILENO, ")", 1);
 	write(STDOUT_FILENO, s, i);
 	pthread_mutex_unlock(this->print);
 }
