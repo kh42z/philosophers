@@ -40,7 +40,7 @@ void 	*do_next(void *v) {
 	t_philo *this;
 	this = (t_philo*)v;
 	this->ate_at = get_time_ms();
-	while (is_dead(this) == 0 && (this->args.nb_of_must_eat > 0 || this->args.nb_of_must_eat == -1)) {
+	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)  {
 		this->action++;
 		if (this->action > 2)
 			this->action = 0;
