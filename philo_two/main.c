@@ -12,39 +12,52 @@
 
 #include "philo.h"
 
-void			init_mutex(t_args *args, t_end *end, pthread_mutex_t *log_mutex)
+int			init_sem(t_args *args, t_end *end, sem_t *log_mutex, sem_t **forks)
 {
 	memset(end, 0, sizeof(t_end));
-	pthread_mutex_init(log_mutex, NULL);
-	pthread_mutex_init(&end->tid, NULL);
+	sem_unlink(SEM_LOG);
+	sem_unlink(SEM_END);
+	sem_unlink(SEM_FORKS);
+	*forks = sem_open(SEM_FORKS, O_CREAT, 0660, args->nb_of_philos);
+	log_mutex = sem_open(SEM_LOG, O_CREAT, 0660, 1);
+	end->tid = sem_open(SEM_END, O_CREAT, 0660, 1);
 	args->log = log_mutex;
 	args->end = end;
+	if (*forks == SEM_FAILED || end->tid == SEM_FAILED || log_mutex == SEM_FAILED)
+		return (1);
+	return (0);
+}
+
+int 			error_msg(char *s)
+{
+	size_t i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	write(STDERR_FILENO, s, i);
+	return (1);
 }
 
 int				main(int argc, char *argv[])
 {
 	t_args				args;
 	t_philos			philos;
-	t_forks				forks;
 	t_end				end;
-	pthread_mutex_t		log_mutex;
+	sem_t				*forks = NULL;
+	sem_t				log_mutex;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
-	{
-		write(STDERR_FILENO, "Invalid arguments\n", 19);
-		return (1);
-	}
-	init_mutex(&args, &end, &log_mutex);
-	if (new_forks(&forks, args.nb_of_philos) != 0)
-		return (1);
-	if (spawn_philos(&args, &philos, &forks) != 0)
-	{
-		delete_forks(&forks);
-		return (1);
-	}
-	if (awake_philos(&philos) == 0)
-		wait_philos(&philos);
-	delete_forks(&forks);
+		return (error_msg("Usage: ./philo_two 4 200 10 10"));
+	if (init_sem(&args, &end, &log_mutex, &forks) != 0)
+		return (error_msg("Unable to create sem"));
+	if (spawn_philos(&args, &philos, forks) != 0)
+		return (error_msg("Unable to malloc"));
+	awake_philos(&philos);
+	wait_philos(&philos);
 	delete_philos(&philos);
+	sem_close(end.tid);
+	sem_close(forks);
+	sem_close(&log_mutex);
 	return (0);
 }

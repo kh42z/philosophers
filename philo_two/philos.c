@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-t_philo			*new_philo(t_args *args, t_forks *forks, long started_at,
+t_philo			*new_philo(t_args *args, sem_t *forks, long started_at,
 				unsigned int i)
 {
 	t_philo *p;
@@ -21,22 +21,16 @@ t_philo			*new_philo(t_args *args, t_forks *forks, long started_at,
 	if (p == NULL)
 		return (NULL);
 	memset(p, 0, sizeof(t_philo));
-	p->print = args->log;
-	p->end = args->end;
+	p->forks = forks;
 	p->args = *args;
 	p->id = i + 1;
 	p->action = THINKING;
 	p->ate_at = started_at;
 	p->started_at = started_at;
-	p->left = forks->items[i];
-	if (i + 1 == args->nb_of_philos)
-		p->right = forks->items[0];
-	else
-		p->right = forks->items[i + 1];
 	return (p);
 }
 
-int				spawn_philos(t_args *args, t_philos *philos, t_forks *forks)
+int				spawn_philos(t_args *args, t_philos *philos, sem_t *forks)
 {
 	int		i;
 	long	started_at;

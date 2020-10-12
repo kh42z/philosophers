@@ -7,6 +7,14 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include <semaphore.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <fcntl.h>
+
+# define SEM_FORKS "/philo_forks"
+# define SEM_END "/philo_end"
+# define SEM_LOG "/philo_log"
 
 enum philo_actions {
 	THINKING,
@@ -15,7 +23,7 @@ enum philo_actions {
 };
 
 typedef struct 			s_end {
-	pthread_mutex_t 	tid;
+	sem_t				*tid;
 	int 				is_over;
 }						t_end;
 
@@ -25,13 +33,9 @@ typedef struct			s_args {
 	suseconds_t 		tt_eat;
 	suseconds_t 		tt_sleep;
 	long				nb_of_must_eat;
-	pthread_mutex_t 	*log;
+	sem_t			 	*log;
 	t_end			 	*end;
 }						t_args;
-
-typedef struct			s_fork {
-	pthread_mutex_t 	tid;
-}						t_fork;
 
 typedef struct			s_philo {
 	unsigned int 		id;
@@ -39,17 +43,9 @@ typedef struct			s_philo {
 	long 				started_at;
 	long 				ate_at;
 	t_args				args;
-	t_fork				*left;
-	t_fork				*right;
-	pthread_mutex_t 	*print;
-	t_end			 	*end;
+	sem_t				*forks;
 	pthread_t			pid;
 }						t_philo;
-
-typedef struct			s_forks {
-	t_fork 				**items;
-	size_t 				size;
-}						t_forks;
 
 typedef struct			s_philos {
 	t_philo 			**philo;
@@ -67,9 +63,7 @@ void 	print_unprotected(t_philo *this, char *s);
 
 void				wait_philos(t_philos *p);
 int					awake_philos(t_philos *p);
-int 				new_forks(t_forks *forks, unsigned int number);
-int					spawn_philos(t_args *args, t_philos *philos, t_forks *forks);
-void 				delete_forks(t_forks *forks);
+int					spawn_philos(t_args *args, t_philos *philos, sem_t *forks);
 void		 		delete_philos(t_philos *philos);
-t_philo				*new_philo(t_args *args, t_forks *forks, long started_at, unsigned int i);
+t_philo				*new_philo(t_args *args, sem_t *forks, long started_at, unsigned int i);
 #endif //PHILO_PHILO_H
