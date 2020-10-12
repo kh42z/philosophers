@@ -32,21 +32,22 @@ int		parse_args(t_args  *args, int argc, char *argv[])
 	int err;
 
 	args->nb_of_philos = eatos(argv[1], &err);
-	if (err != 0)
+	if (err != 0 || args->nb_of_philos < 2 || args->nb_of_philos > 255)
 		return (1);
 	args->tt_die = eatos(argv[2], &err);
-	if (err != 0)
+	if (err != 0 || args->tt_die < 1)
 		return (1);
 	args->tt_eat = eatos(argv[3], &err);
-	if (err != 0)
+	if (err != 0 || args->tt_eat < 1)
 		return (1);
 	args->tt_sleep = eatos(argv[4], &err);
-	if (err != 0)
+	if (err != 0 || args->tt_sleep < 1)
 		return (1);
 	args->nb_of_must_eat = -1;
-	if (argc == 6)
+	if (argc == 6) {
 		args->nb_of_must_eat = eatos(argv[5], &err);
-	if (err != 0)
-		return (1);
+		if (err != 0 || args->nb_of_must_eat < 1)
+			return (1);
+	}
 	return (0);
 }

@@ -10,30 +10,49 @@ int 	is_dead(t_philo *this)
 	return (0);
 }
 
-void 	do_stuff(t_philo *this) {
+int 	wait(t_philo *this, suseconds_t timer)
+{
 	int 			err;
+	long			started_at;
+
+	started_at = get_time_ms();
+	while (get_time_ms() - started_at < timer)
+	{
+		err = usleep(1000);
+		if (err != 0)
+		{
+			print_log(this, "USLEEP FAILED");
+			return (1);
+		}
+		if (is_dead(this) == 1)
+			return (1);
+	}
+	return (0);
+}
+
+void 	do_stuff(t_philo *this) {
 
 	if (this->action == EATING) {
 		pthread_mutex_lock(&this->left->tid);
-		print_log(this, " has taken a left fork\n");
+		print_log(this, "has taken a fork\n");
 		pthread_mutex_lock(&this->right->tid);
-		print_log(this, " has taken a right fork\n");
-		this->ate_at = get_time_ms();
-		print_log(this, " is eating\n");
-		if ((err = usleep(this->args.tt_eat * 1000)) != 0)
-			print_log(this, " USLEEP FAILED");
+		print_log(this, "has taken a fork\n");
+		print_log(this, "is eating\n");
+		if (wait(this, this->args.tt_eat) == 0)
+		{
+			this->ate_at = get_time_ms();
+			if (this->args.nb_of_must_eat > 0)
+				this->args.nb_of_must_eat--;
+		}
 		pthread_mutex_unlock(&this->right->tid);
 		pthread_mutex_unlock(&this->left->tid);
-		if (this->args.nb_of_must_eat > 0)
-			this->args.nb_of_must_eat--;
 	}
 	if (this->action == SLEEPING) {
-		print_log(this, " is sleeping\n");
-		if ((err = usleep(this->args.tt_sleep * 1000)) != 0)
-			printf("ERRROR %s\n", strerror(err));
+		print_log(this, "is sleeping\n");
+		wait(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING) {
-		print_log(this, " is thinking\n");
+		print_log(this, "is thinking\n");
 	}
 }
 
@@ -47,8 +66,7 @@ void 	*do_next(void *v) {
 	this->ate_at = get_time_ms();
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)  {
 		pthread_mutex_lock(&this->end->tid);
-		if (this->end->is_over == 1)
-			over = 1;
+		over = this->end->is_over;
 		pthread_mutex_unlock(&this->end->tid);
 		if (over == 1)
 			break ;
@@ -60,10 +78,13 @@ void 	*do_next(void *v) {
 	if (over == 0)
 	{
 		pthread_mutex_lock(&this->end->tid);
-		this->end->is_over = 1;
+		if (this->end->is_over == 0)
+		{
+			this->end->is_over = 1;
+			if (this->args.nb_of_must_eat != 0)
+				print_unprotected(this, "died\n");
+		}
 		pthread_mutex_unlock(&this->end->tid);
-		if (this->args.nb_of_must_eat != 0)
-			print_log(this, " is dead\n");
 	}
 	return (this);
 }
@@ -79,7 +100,7 @@ t_philo 		*new_philo(t_args *args, t_forks *forks, pthread_mutex_t *mutex, t_end
 	p->print = mutex;
 	p->end = end;
 	p->args = *args;
-	p->id = i;
+	p->id = i + 1;
 	p->action = THINKING;
 	p->left = forks->items[i];
 	p->started_at = get_time_ms();

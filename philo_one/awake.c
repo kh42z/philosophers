@@ -8,7 +8,7 @@ static int 		awake_mod_philos(t_philos *p, short n)
 	i = 0;
 	while (i < p->size)
 	{
-		if (p->philo[i]->id % 2 == n)
+		if (i % 2 == n)
 		{
 			err = pthread_create(&p->philo[i]->pid, NULL, do_next, p->philo[i]);
 			if (err != 0)
@@ -35,7 +35,7 @@ int 			awake_philos(t_philos *p)
 
 	if ((err = awake_even_philos(p)) != 0)
 		return (err);
-	usleep(10000);
+	usleep(p->philo[0]->args.tt_eat * 500);
 	if ((err = awake_odd_philos(p)) != 0)
 		return (err);
 	return (0);

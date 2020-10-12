@@ -58,10 +58,10 @@ typedef struct			s_philos {
 int 	is_dead(t_philo *this);
 void 	*do_next(void *v);
 
-void 	print_number(suseconds_t usec, char *str);
 long 	get_time_ms();
 void 	print_log(t_philo *this, char *s);
 int		parse_args(t_args  *args, int argc, char *argv[]);
+void 	print_unprotected(t_philo *this, char *s);
 
 void				wait_philos(t_philos *p);
 int					awake_philos(t_philos *p);
