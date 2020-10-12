@@ -14,22 +14,24 @@ enum philo_actions {
 	SLEEPING,
 };
 
+typedef struct 			s_end {
+	pthread_mutex_t 	tid;
+	int 				is_over;
+}						t_end;
+
 typedef struct			s_args {
 	unsigned int		nb_of_philos;
 	suseconds_t 		tt_die;
 	suseconds_t 		tt_eat;
 	suseconds_t 		tt_sleep;
 	long				nb_of_must_eat;
+	pthread_mutex_t 	*print;
+	t_end			 	*end;
 }						t_args;
 
 typedef struct			s_fork {
 	pthread_mutex_t 	tid;
 }						t_fork;
-
-typedef struct 			s_end {
-	pthread_mutex_t 	tid;
-	int 				is_over;
-}						t_end;
 
 typedef struct			s_philo {
 	unsigned int 		id;
@@ -66,7 +68,8 @@ void 	print_unprotected(t_philo *this, char *s);
 void				wait_philos(t_philos *p);
 int					awake_philos(t_philos *p);
 int 				new_forks(t_forks *forks, unsigned int number);
-int		 			spawn_philos(t_args *args, t_philos *philos, t_forks *forks, pthread_mutex_t *mutex, t_end *end);
+int					spawn_philos(t_args *args, t_philos *philos, t_forks *forks);
 void 				delete_forks(t_forks *forks);
 void		 		delete_philos(t_philos *philos);
+t_philo				*new_philo(t_args *args, t_forks *forks, long started_at, unsigned int i);
 #endif //PHILO_PHILO_H

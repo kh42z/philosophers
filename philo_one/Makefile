@@ -6,6 +6,7 @@ SRCS	+= forks.c
 SRCS	+= awake.c
 SRCS	+= time.c
 SRCS	+= philo.c
+SRCS	+= philos.c
 
 CFLAGS	= -Wall -Wextra -Werror
 CC		= clang

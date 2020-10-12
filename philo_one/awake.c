@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   awake.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tterrail <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/12 16:46:32 by tterrail          #+#    #+#             */
+/*   Updated: 2020/10/12 16:46:32 by tterrail         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-static int 		awake_mod_philos(t_philos *p, short n)
+static int		awake_mod_philos(t_philos *p, short n)
 {
 	size_t		i;
-	int 		err;
+	int			err;
 
 	i = 0;
 	while (i < p->size)
@@ -19,17 +31,17 @@ static int 		awake_mod_philos(t_philos *p, short n)
 	return (0);
 }
 
-static int 		awake_even_philos(t_philos *p)
+static int		awake_even_philos(t_philos *p)
 {
 	return (awake_mod_philos(p, 0));
 }
 
-static int 		awake_odd_philos(t_philos *p)
+static int		awake_odd_philos(t_philos *p)
 {
 	return (awake_mod_philos(p, 1));
 }
 
-int 			awake_philos(t_philos *p)
+int				awake_philos(t_philos *p)
 {
 	int err;
 
@@ -52,4 +64,3 @@ void			wait_philos(t_philos *p)
 		i++;
 	}
 }
-

@@ -1,12 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   args.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tterrail <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/12 16:46:40 by tterrail          #+#    #+#             */
+/*   Updated: 2020/10/12 16:46:40 by tterrail         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-static int	isdigit(int c) {
+static int			isdigit(int c)
+{
 	if (c >= '0' && c <= '9')
 		return (1);
 	return (0);
 }
 
-suseconds_t 		eatos(char *str, int *err)
+suseconds_t			eatos(char *str, int *err)
 {
 	size_t			i;
 	suseconds_t		arg;
@@ -27,7 +40,7 @@ suseconds_t 		eatos(char *str, int *err)
 	return (arg);
 }
 
-int		parse_args(t_args  *args, int argc, char *argv[])
+int					parse_args(t_args *args, int argc, char *argv[])
 {
 	int err;
 
@@ -44,7 +57,8 @@ int		parse_args(t_args  *args, int argc, char *argv[])
 	if (err != 0 || args->tt_sleep < 1)
 		return (1);
 	args->nb_of_must_eat = -1;
-	if (argc == 6) {
+	if (argc == 6)
+	{
 		args->nb_of_must_eat = eatos(argv[5], &err);
 		if (err != 0 || args->nb_of_must_eat < 1)
 			return (1);

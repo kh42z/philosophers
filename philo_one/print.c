@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   print.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tterrail <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/12 16:46:04 by tterrail          #+#    #+#             */
+/*   Updated: 2020/10/12 16:46:04 by tterrail         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-static  size_t 		power10(size_t power)
+static size_t		power10(size_t power)
 {
 	size_t t;
 
@@ -13,9 +25,10 @@ static  size_t 		power10(size_t power)
 	return (t);
 }
 
-static size_t 	number_size(suseconds_t usec){
+static size_t		number_size(suseconds_t usec)
+{
 	suseconds_t		copy;
-	size_t 			t;
+	size_t			t;
 
 	if (usec == 0)
 		return (1);
@@ -29,11 +42,11 @@ static size_t 	number_size(suseconds_t usec){
 	return (t);
 }
 
-void 	print_number(suseconds_t usec)
+void				print_number(suseconds_t usec)
 {
 	size_t			t;
-	size_t 			c;
-	static char 			buff[1024];
+	size_t			c;
+	static char		buff[1024];
 
 	t = number_size(usec);
 	if (t > 1022)
@@ -49,11 +62,9 @@ void 	print_number(suseconds_t usec)
 	write(STDOUT_FILENO, buff, c + 1);
 }
 
-
-
-void 	print_unprotected(t_philo *this, char *s)
+void				print_unprotected(t_philo *this, char *s)
 {
-	size_t 					i;
+	size_t		i;
 
 	i = 0;
 	while (s[i])
@@ -65,11 +76,9 @@ void 	print_unprotected(t_philo *this, char *s)
 	pthread_mutex_unlock(this->print);
 }
 
-
-void 	print_log(t_philo *this, char *s)
+void				print_log(t_philo *this, char *s)
 {
-
-	int 					is_over;
+	int			is_over;
 
 	pthread_mutex_lock(&this->end->tid);
 	is_over = this->end->is_over;
@@ -78,5 +87,3 @@ void 	print_log(t_philo *this, char *s)
 		return ;
 	print_unprotected(this, s);
 }
-
-
