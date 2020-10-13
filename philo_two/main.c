@@ -12,7 +12,8 @@
 
 #include "philo.h"
 
-int			init_sem(t_args *args, t_end *end, sem_t *log_mutex, sem_t **forks)
+int				init_sem(t_args *args, t_end *end, sem_t *log_mutex,
+				sem_t **forks)
 {
 	memset(end, 0, sizeof(t_end));
 	sem_unlink(SEM_LOG);
@@ -23,12 +24,13 @@ int			init_sem(t_args *args, t_end *end, sem_t *log_mutex, sem_t **forks)
 	end->tid = sem_open(SEM_END, O_CREAT, 0660, 1);
 	args->log = log_mutex;
 	args->end = end;
-	if (*forks == SEM_FAILED || end->tid == SEM_FAILED || log_mutex == SEM_FAILED)
+	if (*forks == SEM_FAILED || end->tid == SEM_FAILED ||
+	log_mutex == SEM_FAILED)
 		return (1);
 	return (0);
 }
 
-int 			error_msg(char *s)
+int				error_msg(char *s)
 {
 	size_t i;
 
@@ -44,7 +46,7 @@ int				main(int argc, char *argv[])
 	t_args				args;
 	t_philos			philos;
 	t_end				end;
-	sem_t				*forks = NULL;
+	sem_t				*forks;
 	sem_t				log_mutex;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
