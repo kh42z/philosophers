@@ -17,7 +17,7 @@ int				is_dead(t_philo *this)
 	long c;
 
 	c = get_time_ms();
-	if (c - this->ate_at > this->args.tt_die)
+	if (c - this->ate_at >= this->args.tt_die)
 		return (1);
 	return (0);
 }
