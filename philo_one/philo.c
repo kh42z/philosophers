@@ -33,7 +33,7 @@ int				wait(t_philo *this, suseconds_t timer)
 			print_log(this, "USLEEP FAILED");
 			return (1);
 		}
-		if (is_dead(this) == 1)
+		if (this->action != EATING && is_dead(this) == 1)
 			return (1);
 	}
 	return (0);
