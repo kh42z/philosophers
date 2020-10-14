@@ -74,11 +74,9 @@ void				print_unprotected(t_philo *this, char *s)
 	write(STDOUT_FILENO, s, i);
 }
 
-
 void				print_log(t_philo *this, char *s)
 {
 	sem_wait(this->args.log);
 	print_unprotected(this, s);
 	sem_post(this->args.log);
 }
-

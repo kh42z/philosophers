@@ -31,10 +31,9 @@ void		*is_he_dead(void *philo)
 		pthread_mutex_lock(&this->end->tid);
 		over = this->end->is_over;
 		pthread_mutex_unlock(&this->end->tid);
+		pthread_mutex_lock(&this->eating);
 		if (over == 1 || this->args.nb_of_must_eat == 0)
 			break;
-
-		pthread_mutex_lock(&this->eating);
 		if (is_dead(this) == 1)
 		{
 			if (over == 0)

@@ -16,7 +16,7 @@ void 	*watcher(void *a)
 	return (NULL);
 }
 
-void 	create_watcher(t_args *args)
+pthread_t			create_watcher(t_args *args)
 {
 	pthread_t			pid;
 	int 				err;
@@ -24,5 +24,35 @@ void 	create_watcher(t_args *args)
 	err = pthread_create(&pid, NULL, watcher, args);
 	if (err != 0)
 		write(STDERR_FILENO, "Unable to create watcher\n", 26);
+	return (pid);
+}
+
+static void 		announce_death(t_philo *this)
+{
+	sem_wait(this->args.log);
+	print_unprotected(this, "died\n");
+	sem_post(this->args.end);
+}
+
+void		*is_he_dead(void *philo)
+{
+	t_philo	*this;
+
+	this = (t_philo*)philo;
+	while (1)
+	{
+		sem_wait(this->eating);
+		if (this->args.nb_of_must_eat == 0)
+			break;
+		if (is_dead(this) == 1)
+		{
+			announce_death(this);
+			sem_post(this->eating);
+			break ;
+		}
+		sem_post(this->eating);
+		usleep(1);
+	}
+	return (NULL);
 }
 

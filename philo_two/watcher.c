@@ -28,12 +28,12 @@ void		*is_he_dead(void *philo)
 	this = (t_philo*)philo;
 	while (1)
 	{
+		sem_wait(this->eating);
 		sem_wait(this->args.end->tid);
 		over = this->args.end->is_over;
 		sem_post(this->args.end->tid);
 		if (over == 1 || this->args.nb_of_must_eat == 0)
 			break;
-		sem_wait(this->eating);
 		if (is_dead(this) == 1)
 		{
 			if (over == 0)

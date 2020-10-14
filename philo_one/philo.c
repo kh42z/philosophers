@@ -14,12 +14,12 @@
 
 int				is_dead(t_philo *this)
 {
-	if (get_time_ms() - this->ate_at >= this->args.tt_die)
+	if (get_time_ms() - this->ate_at > this->args.tt_die)
 		return (1);
 	return (0);
 }
 
-int				wait(t_philo *this, suseconds_t timer)
+int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
@@ -46,7 +46,7 @@ void			do_stuff(t_philo *this)
 		pthread_mutex_lock(&this->right->tid);
 		print_log(this, "has taken a fork\n");
 		print_log(this, "is eating\n");
-		if (wait(this, this->args.tt_eat) == 0)
+		if (wait_ms(this, this->args.tt_eat) == 0)
 		{
 			pthread_mutex_lock(&this->eating);
 			this->ate_at = get_time_ms();
@@ -60,7 +60,7 @@ void			do_stuff(t_philo *this)
 	if (this->action == SLEEPING)
 	{
 		print_log(this, "is sleeping\n");
-		wait(this, this->args.tt_sleep);
+		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
 		print_log(this, "is thinking\n");
@@ -71,7 +71,6 @@ void			*do_next(void *v)
 	t_philo		*this;
 	int			over;
 
-	over = 0;
 	this = (t_philo*)v;
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)
 	{

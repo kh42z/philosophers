@@ -17,12 +17,12 @@ int				is_dead(t_philo *this)
 	long c;
 
 	c = get_time_ms();
-	if (c - this->ate_at >= this->args.tt_die)
+	if (c - this->ate_at > this->args.tt_die)
 		return (1);
 	return (0);
 }
 
-int				wait(t_philo *this, suseconds_t timer)
+int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
@@ -49,7 +49,7 @@ void			do_stuff(t_philo *this)
 		sem_wait(this->forks);
 		print_log(this, "has taken a fork\n");
 		print_log(this, "is eating\n");
-		if (wait(this, this->args.tt_eat) == 0)
+		if (wait_ms(this, this->args.tt_eat) == 0)
 		{
 			sem_wait(this->eating);
 			this->ate_at = get_time_ms();
@@ -63,7 +63,7 @@ void			do_stuff(t_philo *this)
 	if (this->action == SLEEPING)
 	{
 		print_log(this, "is sleeping\n");
-		wait(this, this->args.tt_sleep);
+		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
 		print_log(this, "is thinking\n");

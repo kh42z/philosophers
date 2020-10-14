@@ -23,7 +23,7 @@ int				init_sem(t_args *args)
 	args->end = sem_open(SEM_END, O_CREAT, 0660, 0);
 	args->done = sem_open(SEM_DONE, O_CREAT, 0660, 0);
 	if (args->forks == SEM_FAILED || args->end == SEM_FAILED ||
-	args->log == SEM_FAILED || args->done == SEM_FAILED)
+		args->log == SEM_FAILED || args->done == SEM_FAILED)
 		return (1);
 	return (0);
 }
@@ -51,18 +51,20 @@ int				main(int argc, char *argv[])
 {
 	t_args				args;
 	t_philos			philos;
+	pthread_t 			watcher;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
-		return (error_msg("Usage: ./philo_two 4 200 10 10"));
+		return (error_msg("Usage: ./philo_two 4 200 10 10\n"));
 	if (init_sem(&args) != 0)
-		return (error_msg("Unable to create sem"));
+		return (error_msg("Unable to create sem\n"));
 	if (spawn_philos(&args, &philos) != 0)
-		return (error_msg("Unable to malloc"));
-	create_watcher(&args);
+		return (error_msg("Unable to malloc\n"));
+	watcher = create_watcher(&args);
 	awake_philos(&philos);
 	sem_wait(args.end);
-	close_sem(&args);
 	kill_philos(&philos);
 	delete_philos(&philos);
+	pthread_join(watcher, NULL);
+	close_sem(&args);
 	return (0);
 }

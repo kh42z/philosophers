@@ -14,7 +14,7 @@
 
 static int		awake_mod_philos(t_philos *p, short n)
 {
-	size_t		i;
+	unsigned int	i;
 
 	i = 0;
 	while (i < p->size)
@@ -26,6 +26,8 @@ static int		awake_mod_philos(t_philos *p, short n)
 				return (1);
 			if (p->philo[i]->pid == 0)
 			{
+				if (pthread_create(&p->philo[i]->watcher, NULL, is_he_dead, p->philo[i]) != 0)
+					exit(255);
 				do_next(p->philo[i]);
 				exit(0);
 			}
@@ -66,7 +68,11 @@ void			kill_philos(t_philos *p)
 	while (i < p->size)
 	{
 		if (p->philo[i] != 0)
-			kill(p->philo[i]->pid, SIGQUIT);
+		{
+			sem_post(p->philo[i]->args.done);
+			kill(p->philo[i]->pid, SIGTERM);
+		}
 		i++;
 	}
 }
+

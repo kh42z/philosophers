@@ -6,11 +6,9 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <stdio.h>
-#include <string.h>
 #include <semaphore.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <fcntl.h>
+#include <string.h>
 #include <wait.h>
 
 # define SEM_FORKS "/philo_forks"
@@ -31,9 +29,9 @@ typedef struct			s_args {
 	suseconds_t 		tt_sleep;
 	long				nb_of_must_eat;
 	sem_t			 	*log;
+	sem_t				*forks;
 	sem_t			 	*end;
 	sem_t				*done;
-	sem_t				*forks;
 }						t_args;
 
 typedef struct			s_philo {
@@ -43,7 +41,9 @@ typedef struct			s_philo {
 	long 				ate_at;
 	t_args				args;
 	sem_t				*forks;
-	pid_t				pid;
+	sem_t				*eating;
+	pthread_t 			watcher;
+	pthread_t			pid;
 }						t_philo;
 
 typedef struct			s_philos {
@@ -54,9 +54,10 @@ typedef struct			s_philos {
 
 int 	is_dead(t_philo *this);
 void 	*do_next(void *v);
+void	*is_he_dead(void *philo);
+pthread_t			create_watcher(t_args *args);
 
 long 	get_time_ms();
-void 	create_watcher(t_args *args);
 void 	print_log(t_philo *this, char *s);
 int		parse_args(t_args  *args, int argc, char *argv[]);
 void 	print_unprotected(t_philo *this, char *s);

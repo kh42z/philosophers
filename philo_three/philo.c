@@ -12,36 +12,17 @@
 
 #include "philo.h"
 
-void			create_mutex(t_philo *this)
-{
-	char				name[255];
-	int					i;
-	unsigned int 		id;
-
-	i = 2;
-	name[0] = 'p';
-	name[1] = '_';
-	id = this->id;
-	while (id > 0)
-	{
-		name[i] = (id % 10) + '0';
-		id /= 10;
-		++i;
-	}
-	name[i] = '\0';
-}
-
 int				is_dead(t_philo *this)
 {
 	long c;
 
 	c = get_time_ms();
-	if (c - this->ate_at >= this->args.tt_die)
+	if (c - this->ate_at > this->args.tt_die)
 		return (1);
 	return (0);
 }
 
-static int				wait_until_death(t_philo *this, suseconds_t timer)
+int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
@@ -49,14 +30,12 @@ static int				wait_until_death(t_philo *this, suseconds_t timer)
 	started_at = get_time_ms();
 	while (get_time_ms() - started_at < timer)
 	{
-		err = usleep(1);
+		err = usleep(10);
 		if (err != 0)
 		{
 			print_log(this, "USLEEP FAILED");
 			return (1);
 		}
-		if (this->action != EATING && is_dead(this) == 1)
-			return (1);
 	}
 	return (0);
 }
@@ -70,9 +49,11 @@ void			do_stuff(t_philo *this)
 		sem_wait(this->forks);
 		print_log(this, "has taken a fork\n");
 		print_log(this, "is eating\n");
-		if (wait_until_death(this, this->args.tt_eat) == 0)
+		if (wait_ms(this, this->args.tt_eat) == 0)
 		{
+			sem_wait(this->eating);
 			this->ate_at = get_time_ms();
+			sem_post(this->eating);
 			if (this->args.nb_of_must_eat > 0)
 				this->args.nb_of_must_eat--;
 		}
@@ -82,7 +63,7 @@ void			do_stuff(t_philo *this)
 	if (this->action == SLEEPING)
 	{
 		print_log(this, "is sleeping\n");
-		wait_until_death(this, this->args.tt_sleep);
+		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
 		print_log(this, "is thinking\n");
@@ -100,13 +81,7 @@ void			*do_next(void *v)
 			this->action = 0;
 		do_stuff(this);
 	}
-	if (this->args.nb_of_must_eat != 0)
-	{
-		sem_wait(this->args.log);
-		print_unprotected(this, "died\n");
-		sem_post(this->args.end);
-	}
-	else
-		sem_post(this->args.done);
+	pthread_join(this->watcher, NULL);
+	sem_post(this->args.done);
 	return (this);
 }
