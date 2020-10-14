@@ -46,11 +46,11 @@ int				main(int argc, char *argv[])
 	t_end				end;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
-		return (error_msg("Usage: ./philo_two 4 200 10 10"));
+		return (error_msg("Usage: ./philo_two 4 200 10 10\n"));
 	if (init_sem(&args, &end) != 0)
-		return (error_msg("Unable to create sem"));
+		return (error_msg("Unable to create sem\n"));
 	if (spawn_philos(&args, &philos) != 0)
-		return (error_msg("Unable to malloc"));
+		return (error_msg("Unable to malloc\n"));
 	awake_philos(&philos);
 	wait_philos(&philos);
 	delete_philos(&philos);

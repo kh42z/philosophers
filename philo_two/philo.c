@@ -48,15 +48,15 @@ void			do_stuff(t_philo *this)
 		print_log(this, "has taken a fork\n");
 		sem_wait(this->forks);
 		print_log(this, "has taken a fork\n");
-		sem_wait(this->eating);
 		print_log(this, "is eating\n");
 		if (wait(this, this->args.tt_eat) == 0)
 		{
+			sem_wait(this->eating);
 			this->ate_at = get_time_ms();
+			sem_post(this->eating);
 			if (this->args.nb_of_must_eat > 0)
 				this->args.nb_of_must_eat--;
 		}
-		sem_post(this->eating);
 		sem_post(this->forks);
 		sem_post(this->forks);
 	}

@@ -53,7 +53,6 @@ int				awake_philos(t_philos *p)
 		return (0);
 	if ((err = awake_even_philos(p)) != 0)
 		return (err);
-	usleep(p->philo[0]->args.tt_die * 500);
 	if ((err = awake_odd_philos(p)) != 0)
 		return (err);
 	return (0);

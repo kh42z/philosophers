@@ -20,12 +20,6 @@ static void 		announce_death(t_philo *this)
 	pthread_mutex_unlock(&this->end->tid);
 }
 
-static void 		is_he_eating(t_philo *this)
-{
-	pthread_mutex_lock(&this->eating);
-	pthread_mutex_unlock(&this->eating);
-}
-
 void		*is_he_dead(void *philo)
 {
 	t_philo	*this;
@@ -34,20 +28,23 @@ void		*is_he_dead(void *philo)
 	this = (t_philo*)philo;
 	while (1)
 	{
-		is_he_eating(this);
 		pthread_mutex_lock(&this->end->tid);
 		over = this->end->is_over;
 		pthread_mutex_unlock(&this->end->tid);
 		if (over == 1 || this->args.nb_of_must_eat == 0)
 			break;
+
+		pthread_mutex_lock(&this->eating);
 		if (is_dead(this) == 1)
 		{
 			if (over == 0)
 			{
 				announce_death(this);
+				pthread_mutex_unlock(&this->eating);
 				break ;
 			}
 		}
+		pthread_mutex_unlock(&this->eating);
 		usleep(1);
 	}
 	return (NULL);

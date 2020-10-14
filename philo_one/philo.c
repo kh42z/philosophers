@@ -12,25 +12,6 @@
 
 #include "philo.h"
 
-void			create_mutex(t_philo *this)
-{
-	char				name[255];
-	int					i;
-	unsigned int		id;
-
-	i = 2;
-	name[0] = 'p';
-	name[1] = '_';
-	id = this->id;
-	while (id > 0)
-	{
-		name[i] = (id % 10) + '0';
-		id /= 10;
-		++i;
-	}
-	name[i] = '\0';
-}
-
 int				is_dead(t_philo *this)
 {
 	if (get_time_ms() - this->ate_at >= this->args.tt_die)
@@ -64,15 +45,15 @@ void			do_stuff(t_philo *this)
 		print_log(this, "has taken a fork\n");
 		pthread_mutex_lock(&this->right->tid);
 		print_log(this, "has taken a fork\n");
-		pthread_mutex_lock(&this->eating);
 		print_log(this, "is eating\n");
 		if (wait(this, this->args.tt_eat) == 0)
 		{
+			pthread_mutex_lock(&this->eating);
 			this->ate_at = get_time_ms();
+			pthread_mutex_unlock(&this->eating);
 			if (this->args.nb_of_must_eat > 0)
 				this->args.nb_of_must_eat--;
 		}
-		pthread_mutex_unlock(&this->eating);
 		pthread_mutex_unlock(&this->right->tid);
 		pthread_mutex_unlock(&this->left->tid);
 	}

@@ -20,12 +20,6 @@ static void 		announce_death(t_philo *this)
 	sem_post(this->args.end->tid);
 }
 
-static void 		is_he_eating(t_philo *this)
-{
-	sem_wait(this->eating);
-	sem_post(this->eating);
-}
-
 void		*is_he_dead(void *philo)
 {
 	t_philo	*this;
@@ -34,20 +28,22 @@ void		*is_he_dead(void *philo)
 	this = (t_philo*)philo;
 	while (1)
 	{
-		is_he_eating(this);
 		sem_wait(this->args.end->tid);
 		over = this->args.end->is_over;
 		sem_post(this->args.end->tid);
 		if (over == 1 || this->args.nb_of_must_eat == 0)
 			break;
+		sem_wait(this->eating);
 		if (is_dead(this) == 1)
 		{
 			if (over == 0)
 			{
 				announce_death(this);
+				sem_post(this->eating);
 				break ;
 			}
 		}
+		sem_post(this->eating);
 		usleep(1);
 	}
 	return (NULL);
