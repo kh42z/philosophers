@@ -12,6 +12,25 @@
 
 #include "philo.h"
 
+void			create_mutex(t_philo *this)
+{
+	char				name[255];
+	int					i;
+	unsigned int 		id;
+
+	i = 2;
+	name[0] = 'p';
+	name[1] = '_';
+	id = this->id;
+	while (id > 0)
+	{
+		name[i] = (id % 10) + '0';
+		id /= 10;
+		++i;
+	}
+	name[i] = '\0';
+}
+
 int				is_dead(t_philo *this)
 {
 	long c;

@@ -25,7 +25,7 @@ typedef struct			s_args {
 	suseconds_t 		tt_eat;
 	suseconds_t 		tt_sleep;
 	long				nb_of_must_eat;
-	pthread_mutex_t 	*log;
+	pthread_mutex_t 	log;
 	t_end			 	*end;
 }						t_args;
 
@@ -42,8 +42,10 @@ typedef struct			s_philo {
 	t_fork				*left;
 	t_fork				*right;
 	pthread_mutex_t 	*print;
+	pthread_mutex_t 	eating;
 	t_end			 	*end;
 	pthread_t			pid;
+	pthread_t			watcher;
 }						t_philo;
 
 typedef struct			s_forks {
@@ -57,7 +59,8 @@ typedef struct			s_philos {
 }						t_philos;
 
 
-int 	is_dead(t_philo *this);
+void		*is_he_dead(void *this);
+int 		is_dead(t_philo *this);
 void 	*do_next(void *v);
 
 long 	get_time_ms();

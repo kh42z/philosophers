@@ -25,6 +25,10 @@ static int		awake_mod_philos(t_philos *p, short n)
 			err = pthread_create(&p->philo[i]->pid, NULL, do_next, p->philo[i]);
 			if (err != 0)
 				return (err);
+			err = pthread_create(&p->philo[i]->watcher, NULL,
+					is_he_dead, p->philo[i]);
+			if (err != 0)
+				return (err);
 		}
 		i++;
 	}

@@ -21,7 +21,7 @@ t_philo			*new_philo(t_args *args, t_forks *forks, long started_at,
 	if (p == NULL)
 		return (NULL);
 	memset(p, 0, sizeof(t_philo));
-	p->print = args->log;
+	p->print = &args->log;
 	p->end = args->end;
 	p->args = *args;
 	p->id = i + 1;
@@ -29,6 +29,7 @@ t_philo			*new_philo(t_args *args, t_forks *forks, long started_at,
 	p->ate_at = started_at;
 	p->started_at = started_at;
 	p->left = forks->items[i];
+	pthread_mutex_init(&p->eating, NULL);
 	if (i + 1 == args->nb_of_philos)
 		p->right = forks->items[0];
 	else
