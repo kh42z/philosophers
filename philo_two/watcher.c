@@ -39,12 +39,12 @@ void		*is_he_dead(void *philo)
 			if (over == 0)
 			{
 				announce_death(this);
-				sem_post(this->eating);
 				break ;
 			}
 		}
 		sem_post(this->eating);
 		usleep(1);
 	}
+	sem_post(this->eating);
 	return (NULL);
 }

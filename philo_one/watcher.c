@@ -39,12 +39,12 @@ void		*is_he_dead(void *philo)
 			if (over == 0)
 			{
 				announce_death(this);
-				pthread_mutex_unlock(&this->eating);
 				break ;
 			}
 		}
 		pthread_mutex_unlock(&this->eating);
 		usleep(1);
 	}
+	pthread_mutex_unlock(&this->eating);
 	return (NULL);
 }
