@@ -44,6 +44,7 @@ int					parse_args(t_args *args, int argc, char *argv[])
 {
 	int err;
 
+	memset(args, 0, sizeof(t_args));
 	args->nb_of_philos = eatos(argv[1], &err);
 	if (err != 0 || args->nb_of_philos < 2 || args->nb_of_philos > 255)
 		return (1);

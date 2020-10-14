@@ -30,14 +30,12 @@ int				wait(t_philo *this, suseconds_t timer)
 	started_at = get_time_ms();
 	while (get_time_ms() - started_at < timer)
 	{
-		err = usleep(1);
+		err = usleep(10);
 		if (err != 0)
 		{
 			print_log(this, "USLEEP FAILED");
 			return (1);
 		}
-		if (this->action != EATING && is_dead(this) == 1)
-			return (1);
 	}
 	return (0);
 }
@@ -50,6 +48,7 @@ void			do_stuff(t_philo *this)
 		print_log(this, "has taken a fork\n");
 		sem_wait(this->forks);
 		print_log(this, "has taken a fork\n");
+		sem_wait(this->eating);
 		print_log(this, "is eating\n");
 		if (wait(this, this->args.tt_eat) == 0)
 		{
@@ -57,6 +56,7 @@ void			do_stuff(t_philo *this)
 			if (this->args.nb_of_must_eat > 0)
 				this->args.nb_of_must_eat--;
 		}
+		sem_post(this->eating);
 		sem_post(this->forks);
 		sem_post(this->forks);
 	}
@@ -69,27 +69,11 @@ void			do_stuff(t_philo *this)
 		print_log(this, "is thinking\n");
 }
 
-void			is_over(t_philo *this, int over)
-{
-	if (over == 0)
-	{
-		sem_wait(this->args.end->tid);
-		if (this->args.end->is_over == 0)
-		{
-			this->args.end->is_over = 1;
-			if (this->args.nb_of_must_eat != 0)
-				print_unprotected(this, "died\n");
-		}
-		sem_post(this->args.end->tid);
-	}
-}
-
 void			*do_next(void *v)
 {
 	t_philo		*this;
 	int			over;
 
-	over = 0;
 	this = (t_philo*)v;
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)
 	{
@@ -103,6 +87,6 @@ void			*do_next(void *v)
 			this->action = 0;
 		do_stuff(this);
 	}
-	is_over(this, over);
+	pthread_join(this->watcher, NULL);
 	return (this);
 }

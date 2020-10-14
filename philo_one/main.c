@@ -20,6 +20,17 @@ void			init_mutex(t_args *args, t_end *end)
 	args->end = end;
 }
 
+int				error_msg(char *s)
+{
+	size_t i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	write(STDERR_FILENO, s, i);
+	return (1);
+}
+
 int				main(int argc, char *argv[])
 {
 	t_args				args;
@@ -28,20 +39,17 @@ int				main(int argc, char *argv[])
 	t_end				end;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
-	{
-		write(STDERR_FILENO, "Invalid arguments\n", 19);
-		return (1);
-	}
+		return error_msg("Usage: ./philo_one 2 200 100 100");
 	init_mutex(&args, &end);
 	if (new_forks(&forks, args.nb_of_philos) != 0)
-		return (1);
+		return error_msg("Unable to create forks");
 	if (spawn_philos(&args, &philos, &forks) != 0)
 	{
 		delete_forks(&forks);
-		return (1);
+		return error_msg("Unable to spawn philos");
 	}
-	if (awake_philos(&philos) == 0)
-		wait_philos(&philos);
+	awake_philos(&philos);
+	wait_philos(&philos);
 	delete_forks(&forks);
 	delete_philos(&philos);
 	return (0);

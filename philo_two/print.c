@@ -69,21 +69,17 @@ void				print_unprotected(t_philo *this, char *s)
 	i = 0;
 	while (s[i])
 		i++;
-	sem_wait(this->args.log);
 	print_number(get_time_ms() - this->started_at);
 	print_number(this->id);
 	write(STDOUT_FILENO, s, i);
-	sem_post(this->args.log);
 }
 
 void				print_log(t_philo *this, char *s)
 {
-	int			is_over;
-
+	sem_wait(this->args.log);
 	sem_wait(this->args.end->tid);
-	is_over = this->args.end->is_over;
+	if (this->args.end->is_over == 0)
+		print_unprotected(this, s);
 	sem_post(this->args.end->tid);
-	if (is_over == 1)
-		return ;
-	print_unprotected(this, s);
+	sem_post(this->args.log);
 }

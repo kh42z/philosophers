@@ -69,21 +69,17 @@ void				print_unprotected(t_philo *this, char *s)
 	i = 0;
 	while (s[i])
 		i++;
-	pthread_mutex_lock(this->print);
 	print_number(get_time_ms() - this->started_at);
 	print_number(this->id);
 	write(STDOUT_FILENO, s, i);
-	pthread_mutex_unlock(this->print);
 }
 
 void				print_log(t_philo *this, char *s)
 {
-	int			is_over;
-
+	pthread_mutex_lock(this->print);
 	pthread_mutex_lock(&this->end->tid);
-	is_over = this->end->is_over;
+	if (this->end->is_over == 0)
+		print_unprotected(this, s);
 	pthread_mutex_unlock(&this->end->tid);
-	if (is_over == 1)
-		return ;
-	print_unprotected(this, s);
+	pthread_mutex_unlock(this->print);
 }

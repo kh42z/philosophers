@@ -34,6 +34,7 @@ typedef struct			s_args {
 	suseconds_t 		tt_sleep;
 	long				nb_of_must_eat;
 	sem_t			 	*log;
+	sem_t				*forks;
 	t_end			 	*end;
 }						t_args;
 
@@ -44,6 +45,8 @@ typedef struct			s_philo {
 	long 				ate_at;
 	t_args				args;
 	sem_t				*forks;
+	sem_t				*eating;
+	pthread_t 			watcher;
 	pthread_t			pid;
 }						t_philo;
 
@@ -55,6 +58,7 @@ typedef struct			s_philos {
 
 int 	is_dead(t_philo *this);
 void 	*do_next(void *v);
+void	*is_he_dead(void *philo);
 
 long 	get_time_ms();
 void 	print_log(t_philo *this, char *s);
@@ -63,7 +67,7 @@ void 	print_unprotected(t_philo *this, char *s);
 
 void				wait_philos(t_philos *p);
 int					awake_philos(t_philos *p);
-int					spawn_philos(t_args *args, t_philos *philos, sem_t *forks);
+int					spawn_philos(t_args *args, t_philos *philos);
 void		 		delete_philos(t_philos *philos);
-t_philo				*new_philo(t_args *args, sem_t *forks, long started_at, unsigned int i);
+t_philo				*new_philo(t_args *args, long started_at, unsigned int i);
 #endif //PHILO_PHILO_H

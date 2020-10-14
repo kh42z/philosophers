@@ -25,6 +25,10 @@ static int		awake_mod_philos(t_philos *p, short n)
 			err = pthread_create(&p->philo[i]->pid, NULL, do_next, p->philo[i]);
 			if (err != 0)
 				return (err);
+			err = pthread_create(&p->philo[i]->watcher, NULL,
+								 is_he_dead, p->philo[i]);
+			if (err != 0)
+				return (err);
 		}
 		i++;
 	}
@@ -45,9 +49,11 @@ int				awake_philos(t_philos *p)
 {
 	int err;
 
+	if (p->size == 0)
+		return (0);
 	if ((err = awake_even_philos(p)) != 0)
 		return (err);
-	usleep(p->philo[0]->args.tt_eat * 500);
+	usleep(p->philo[0]->args.tt_die * 500);
 	if ((err = awake_odd_philos(p)) != 0)
 		return (err);
 	return (0);

@@ -14,16 +14,16 @@
 
 static void 		announce_death(t_philo *this)
 {
-	pthread_mutex_lock(&this->end->tid);
-	this->end->is_over = 1;
+	sem_wait(this->args.end->tid);
+	this->args.end->is_over = 1;
 	print_unprotected(this, "died\n");
-	pthread_mutex_unlock(&this->end->tid);
+	sem_post(this->args.end->tid);
 }
 
 static void 		is_he_eating(t_philo *this)
 {
-	pthread_mutex_lock(&this->eating);
-	pthread_mutex_unlock(&this->eating);
+	sem_wait(this->eating);
+	sem_post(this->eating);
 }
 
 void		*is_he_dead(void *philo)
@@ -35,9 +35,9 @@ void		*is_he_dead(void *philo)
 	while (1)
 	{
 		is_he_eating(this);
-		pthread_mutex_lock(&this->end->tid);
-		over = this->end->is_over;
-		pthread_mutex_unlock(&this->end->tid);
+		sem_wait(this->args.end->tid);
+		over = this->args.end->is_over;
+		sem_post(this->args.end->tid);
 		if (over == 1 || this->args.nb_of_must_eat == 0)
 			break;
 		if (is_dead(this) == 1)
