@@ -12,7 +12,8 @@
 
 #include "philo.h"
 
-void			create_eating_mutex(t_philo *this) {
+void			create_eating_mutex(t_philo *this)
+{
 	static char		name[255];
 	int				i;
 	unsigned int	id;
@@ -21,7 +22,8 @@ void			create_eating_mutex(t_philo *this) {
 	name[0] = 'p';
 	name[1] = '_';
 	id = this->id;
-	while (id > 0) {
+	while (id > 0)
+	{
 		name[i] = (id % 10) + '0';
 		id /= 10;
 		++i;
@@ -30,7 +32,6 @@ void			create_eating_mutex(t_philo *this) {
 	sem_unlink(name);
 	this->eating = sem_open(name, O_CREAT, 0660, 1);
 }
-
 
 t_philo			*new_philo(t_args *args, long started_at,
 				unsigned int i)

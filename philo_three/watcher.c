@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   watcher.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tterrail <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/10/15 11:14:40 by tterrail          #+#    #+#             */
+/*   Updated: 2020/10/15 11:14:40 by tterrail         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-void 	*watcher(void *a)
+void				*watcher(void *a)
 {
 	t_args	*args;
 	size_t	i;
@@ -19,7 +31,7 @@ void 	*watcher(void *a)
 pthread_t			create_watcher(t_args *args)
 {
 	pthread_t			pid;
-	int 				err;
+	int					err;
 
 	err = pthread_create(&pid, NULL, watcher, args);
 	if (err != 0)
@@ -27,14 +39,14 @@ pthread_t			create_watcher(t_args *args)
 	return (pid);
 }
 
-static void 		announce_death(t_philo *this)
+static void			announce_death(t_philo *this)
 {
 	sem_wait(this->args.log);
 	print_unprotected(this, "died\n");
 	sem_post(this->args.end);
 }
 
-void		*is_he_dead(void *philo)
+void				*is_he_dead(void *philo)
 {
 	t_philo	*this;
 
@@ -43,7 +55,7 @@ void		*is_he_dead(void *philo)
 	{
 		sem_wait(this->eating);
 		if (this->args.nb_of_must_eat == 0)
-			break;
+			break ;
 		if (is_dead(this) == 1)
 		{
 			announce_death(this);
@@ -55,4 +67,3 @@ void		*is_he_dead(void *philo)
 	}
 	return (NULL);
 }
-

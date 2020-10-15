@@ -39,7 +39,7 @@ int				error_msg(char *s)
 	return (1);
 }
 
-void 			close_sem(t_args *args)
+void			close_sem(t_args *args)
 {
 	sem_close(args->end);
 	sem_close(args->log);
@@ -51,7 +51,7 @@ int				main(int argc, char *argv[])
 {
 	t_args				args;
 	t_philos			philos;
-	pthread_t 			watcher;
+	pthread_t			watcher;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
 		return (error_msg("Usage: ./philo_two 4 200 10 10\n"));

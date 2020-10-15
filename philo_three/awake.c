@@ -26,7 +26,8 @@ static int		awake_mod_philos(t_philos *p, short n)
 				return (1);
 			if (p->philo[i]->pid == 0)
 			{
-				if (pthread_create(&p->philo[i]->watcher, NULL, is_he_dead, p->philo[i]) != 0)
+				if (pthread_create(&p->philo[i]->watcher, NULL, is_he_dead,
+					p->philo[i]) != 0)
 					exit(255);
 				do_next(p->philo[i]);
 				exit(0);
@@ -75,4 +76,3 @@ void			kill_philos(t_philos *p)
 		i++;
 	}
 }
-
