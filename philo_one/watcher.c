@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-static void 		announce_death(t_philo *this)
+static void	announce_death(t_philo *this)
 {
 	pthread_mutex_lock(&this->end->tid);
 	this->end->is_over = 1;
@@ -33,7 +33,7 @@ void		*is_he_dead(void *philo)
 		pthread_mutex_unlock(&this->end->tid);
 		pthread_mutex_lock(&this->eating);
 		if (over == 1 || this->args.nb_of_must_eat == 0)
-			break;
+			break ;
 		if (is_dead(this) == 1)
 		{
 			if (over == 0)

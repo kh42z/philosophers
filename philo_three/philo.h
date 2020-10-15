@@ -16,7 +16,7 @@
 # define SEM_LOG "/philo_log"
 # define SEM_DONE "/philo_done"
 
-enum philo_actions {
+enum e_philo_actions {
 	THINKING,
 	EATING,
 	SLEEPING,
@@ -36,7 +36,7 @@ typedef struct			s_args {
 
 typedef struct			s_philo {
 	unsigned int 		id;
-	enum philo_actions 	action;
+	enum e_philo_actions 	action;
 	long 				started_at;
 	long 				ate_at;
 	t_args				args;

@@ -39,14 +39,14 @@ int				main(int argc, char *argv[])
 	t_end				end;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
-		return error_msg("Usage: ./philo_one 2 200 100 100");
+		return (error_msg("Usage: ./philo_one 2 200 100 100"));
 	init_mutex(&args, &end);
 	if (new_forks(&forks, args.nb_of_philos) != 0)
-		return error_msg("Unable to create forks");
+		return (error_msg("Unable to create forks"));
 	if (spawn_philos(&args, &philos, &forks) != 0)
 	{
 		delete_forks(&forks);
-		return error_msg("Unable to spawn philos");
+		return (error_msg("Unable to spawn philos"));
 	}
 	awake_philos(&philos);
 	wait_philos(&philos);
