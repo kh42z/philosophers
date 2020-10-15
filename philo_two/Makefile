@@ -8,7 +8,7 @@ SRCS	+= philo.c
 SRCS	+= philos.c
 SRCS	+= watcher.c
 
-CFLAGS	= -g3 -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror
 CC		= clang
 
 OBJDIR	= .objs
