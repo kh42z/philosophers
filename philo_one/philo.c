@@ -27,7 +27,7 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	started_at = get_time_ms();
 	while (get_time_ms() - started_at < timer)
 	{
-		err = usleep(1000);
+		err = usleep(100);
 		if (err != 0)
 		{
 			print_log(this, "USLEEP FAILED");
@@ -92,6 +92,5 @@ void			*do_next(void *v)
 			this->action = 0;
 		do_stuff(this);
 	}
-	pthread_join(this->watcher, NULL);
 	return (this);
 }

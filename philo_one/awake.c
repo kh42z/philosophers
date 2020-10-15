@@ -27,6 +27,7 @@ static int		create_threads_philos(t_philos *p)
 				is_he_dead, p->philo[i]);
 		if (err != 0)
 			return (err);
+		pthread_detach(p->philo[i]->watcher);
 		usleep(1000);
 		i++;
 	}
