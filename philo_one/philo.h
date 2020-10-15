@@ -18,6 +18,7 @@
 # include <pthread.h>
 # include <string.h>
 
+#include <stdio.h>
 enum					e_actions {
 	THINKING,
 	EATING,
@@ -52,6 +53,7 @@ typedef struct			s_philo {
 	t_fork				*left;
 	t_fork				*right;
 	pthread_mutex_t		*print;
+	pthread_mutex_t 	started;
 	pthread_mutex_t		eating;
 	t_end				*end;
 	pthread_t			pid;
@@ -84,6 +86,5 @@ int						spawn_philos(t_args *args, t_philos *philos,
 						t_forks *forks);
 void					delete_forks(t_forks *forks);
 void					delete_philos(t_philos *philos);
-t_philo					*new_philo(t_args *args, t_forks *forks,
-						long started_at, unsigned int i);
+t_philo					*new_philo(t_args *args, t_forks *forks, unsigned int i);
 #endif

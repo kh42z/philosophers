@@ -78,6 +78,8 @@ void			*do_next(void *v)
 	int			over;
 
 	this = (t_philo*)v;
+	pthread_mutex_lock(&this->started);
+	pthread_mutex_unlock(&this->eating);
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)
 	{
 		pthread_mutex_lock(&this->end->tid);

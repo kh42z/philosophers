@@ -26,6 +26,8 @@ void		*is_he_dead(void *philo)
 	int		over;
 
 	this = (t_philo*)philo;
+	pthread_mutex_lock(&this->eating);
+	pthread_mutex_unlock(&this->eating);
 	while (1)
 	{
 		pthread_mutex_lock(&this->end->tid);
@@ -43,7 +45,7 @@ void		*is_he_dead(void *philo)
 			}
 		}
 		pthread_mutex_unlock(&this->eating);
-		usleep(1);
+		usleep(10);
 	}
 	pthread_mutex_unlock(&this->eating);
 	return (NULL);

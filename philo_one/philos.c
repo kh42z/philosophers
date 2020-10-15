@@ -12,8 +12,7 @@
 
 #include "philo.h"
 
-t_philo			*new_philo(t_args *args, t_forks *forks, long started_at,
-				unsigned int i)
+t_philo			*new_philo(t_args *args, t_forks *forks, unsigned int i)
 {
 	t_philo *p;
 
@@ -26,31 +25,31 @@ t_philo			*new_philo(t_args *args, t_forks *forks, long started_at,
 	p->args = *args;
 	p->id = i + 1;
 	p->action = THINKING;
-	p->ate_at = started_at;
-	p->started_at = started_at;
 	p->left = forks->items[i];
 	pthread_mutex_init(&p->eating, NULL);
+	pthread_mutex_init(&p->started, NULL);
 	if (i + 1 == args->nb_of_philos)
 		p->right = forks->items[0];
 	else
 		p->right = forks->items[i + 1];
+	pthread_mutex_lock(&p->eating);
+	pthread_mutex_lock(&p->started);
 	return (p);
 }
 
 int				spawn_philos(t_args *args, t_philos *philos, t_forks *forks)
 {
 	int		i;
-	long	started_at;
 
+	write(STDOUT_FILENO, "    Diner time...\n", 19);
 	philos->size = 0;
-	started_at = get_time_ms();
 	philos->philo = malloc(sizeof(t_philo*) * args->nb_of_philos);
 	if (!philos->philo)
 		return (-1);
 	while (philos->size < args->nb_of_philos)
 	{
 		i = philos->size;
-		philos->philo[i] = new_philo(args, forks, started_at, i);
+		philos->philo[i] = new_philo(args, forks, i);
 		if (philos->philo[i] == NULL)
 		{
 			delete_philos(philos);
@@ -65,6 +64,8 @@ void			delete_philos(t_philos *philos)
 {
 	while (philos->size > 0)
 	{
+		pthread_mutex_destroy(&philos->philo[philos->size -1]->eating);
+		pthread_mutex_destroy(&philos->philo[philos->size -1]->started);
 		free(philos->philo[philos->size - 1]);
 		--philos->size;
 	}
