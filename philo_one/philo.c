@@ -50,9 +50,9 @@ void			do_stuff(t_philo *this)
 		{
 			pthread_mutex_lock(&this->eating);
 			this->ate_at = get_time_ms();
-			pthread_mutex_unlock(&this->eating);
 			if (this->args.nb_of_must_eat > 0)
 				this->args.nb_of_must_eat--;
+			pthread_mutex_unlock(&this->eating);
 		}
 		pthread_mutex_unlock(&this->right->tid);
 		pthread_mutex_unlock(&this->left->tid);

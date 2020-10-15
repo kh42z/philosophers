@@ -59,11 +59,11 @@ void				*is_he_dead(void *philo)
 		if (is_dead(this) == 1)
 		{
 			announce_death(this);
-			sem_post(this->eating);
 			break ;
 		}
 		sem_post(this->eating);
 		usleep(1);
 	}
+	sem_post(this->eating);
 	return (NULL);
 }

@@ -53,9 +53,9 @@ void			do_stuff(t_philo *this)
 		{
 			sem_wait(this->eating);
 			this->ate_at = get_time_ms();
-			sem_post(this->eating);
 			if (this->args.nb_of_must_eat > 0)
 				this->args.nb_of_must_eat--;
+			sem_post(this->eating);
 		}
 		sem_post(this->forks);
 		sem_post(this->forks);
