@@ -37,6 +37,12 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	return (0);
 }
 
+static void		think(t_philo *this)
+{
+	print_log(this, "is thinking\n");
+	usleep(500);
+}
+
 void			do_stuff(t_philo *this)
 {
 	if (this->action == EATING)
@@ -63,7 +69,7 @@ void			do_stuff(t_philo *this)
 		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
-		print_log(this, "is thinking\n");
+		think(this);
 }
 
 void			*do_next(void *v)
