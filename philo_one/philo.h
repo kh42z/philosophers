@@ -59,7 +59,6 @@ typedef struct			s_philo {
 	t_args				args;
 	t_fork				*left;
 	t_fork				*right;
-	pthread_mutex_t		*print;
 	pthread_mutex_t 	started;
 	pthread_mutex_t		eating;
 	t_log				*log;
@@ -94,6 +93,7 @@ int						spawn_philos(t_args *args, t_philos *philos,
 						t_forks *forks);
 void					delete_forks(t_forks *forks);
 int					 	add(t_log *this, t_philo *p, char *s);
+void					dump(t_log *this);
 void 					log_death(t_log *this, t_philo *p);
 void					delete_philos(t_philos *philos);
 t_philo					*new_philo(t_args *args, t_forks *forks, unsigned int i);

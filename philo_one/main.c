@@ -50,6 +50,7 @@ int				main(int argc, char *argv[])
 	}
 	awake_philos(&philos);
 	wait_philos(&philos);
+	dump(&log);
 	pthread_mutex_destroy(&log.tid);
 	delete_forks(&forks);
 	delete_philos(&philos);

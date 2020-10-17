@@ -78,4 +78,10 @@ void			wait_philos(t_philos *p)
 		pthread_join(p->philo[i]->pid, NULL);
 		i++;
 	}
+	if (p->size > 0)
+	{
+		pthread_mutex_lock(&p->philo[0]->log->tid);
+		p->philo[0]->log->sim_over = 1;
+		pthread_mutex_unlock(&p->philo[0]->log->tid);
+	}
 }
