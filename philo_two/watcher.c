@@ -39,7 +39,7 @@ void		*is_he_dead(void *philo)
 		}
 		sem_post(this->args.end->tid);
 		sem_post(this->eating);
-		usleep(1);
+		usleep(1000);
 	}
 	sem_post(this->args.end->tid);
 	sem_post(this->eating);

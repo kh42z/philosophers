@@ -52,6 +52,7 @@ typedef struct			s_philo {
 	t_args				args;
 	sem_t				*forks;
 	sem_t				*eating;
+	sem_t				*started;
 	pthread_t			watcher;
 	pthread_t			pid;
 }						t_philo;

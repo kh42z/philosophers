@@ -27,7 +27,7 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	started_at = get_time_ms();
 	while (get_time_ms() - started_at < timer)
 	{
-		err = usleep(100);
+		err = usleep(1000);
 		if (err != 0)
 		{
 			print_log(this, "USLEEP FAILED");
@@ -40,7 +40,7 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 static void		think(t_philo *this)
 {
 	print_log(this, "is thinking\n");
-	usleep(500);
+	usleep(1000);
 }
 
 void			do_stuff(t_philo *this)

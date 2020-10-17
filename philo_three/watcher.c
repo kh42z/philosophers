@@ -62,7 +62,7 @@ void				*is_he_dead(void *philo)
 			break ;
 		}
 		sem_post(this->eating);
-		usleep(1);
+		usleep(1000);
 	}
 	sem_post(this->eating);
 	return (NULL);

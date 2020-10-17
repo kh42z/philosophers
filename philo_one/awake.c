@@ -27,8 +27,7 @@ static int		create_threads_philos(t_philos *p)
 				is_he_dead, p->philo[i]);
 		if (err != 0)
 			return (err);
-		pthread_detach(p->philo[i]->watcher);
-		usleep(1000);
+		usleep(10000);
 		i++;
 	}
 	return (0);
@@ -46,7 +45,7 @@ static void 	awake_mod_philos(t_philos *p, int n, long started_at)
 			p->philo[i]->started_at = started_at;
 			p->philo[i]->ate_at = started_at;
 			pthread_mutex_unlock(&p->philo[i]->started);
-			usleep(50);
+			usleep(1000 / p->size);
 		}
 		i++;
 	}
@@ -63,7 +62,6 @@ int				awake_philos(t_philos *p)
 	err = create_threads_philos(p);
 	if (err != 0)
 		return (1);
-	usleep(10000);
 	write(STDOUT_FILENO, "    Unleashing philosophers:\n", 29);
 	started_at = get_time_ms();
 	awake_mod_philos(p, 0, started_at);

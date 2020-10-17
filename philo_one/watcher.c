@@ -14,16 +14,13 @@
 
 static void	announce_death(t_philo *this)
 {
-	pthread_mutex_lock(&this->end->tid);
 	this->end->is_over = 1;
 	print_unprotected(this, "died\n");
-	pthread_mutex_unlock(&this->end->tid);
 }
 
 void		*is_he_dead(void *philo)
 {
 	t_philo	*this;
-	int		over;
 
 	this = (t_philo*)philo;
 	pthread_mutex_lock(&this->eating);
@@ -31,22 +28,22 @@ void		*is_he_dead(void *philo)
 	while (1)
 	{
 		pthread_mutex_lock(&this->end->tid);
-		over = this->end->is_over;
-		pthread_mutex_unlock(&this->end->tid);
 		pthread_mutex_lock(&this->eating);
-		if (over == 1 || this->args.nb_of_must_eat == 0)
+		if (this->end->is_over == 1 || this->args.nb_of_must_eat == 0)
 			break ;
 		if (is_dead(this) == 1)
 		{
-			if (over == 0)
+			if (this->end->is_over == 0)
 			{
 				announce_death(this);
 				break ;
 			}
 		}
 		pthread_mutex_unlock(&this->eating);
-		usleep(10);
+		pthread_mutex_unlock(&this->end->tid);
+		usleep(1000);
 	}
+	pthread_mutex_unlock(&this->end->tid);
 	pthread_mutex_unlock(&this->eating);
 	return (NULL);
 }

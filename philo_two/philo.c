@@ -30,7 +30,7 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	started_at = get_time_ms();
 	while (get_time_ms() - started_at < timer)
 	{
-		err = usleep(10);
+		err = usleep(1000);
 		if (err != 0)
 		{
 			print_log(this, "USLEEP FAILED");
@@ -81,6 +81,8 @@ void			*do_next(void *v)
 	int			over;
 
 	this = (t_philo*)v;
+	sem_wait(this->started);
+	sem_post(this->eating);
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)
 	{
 		sem_wait(this->args.end->tid);

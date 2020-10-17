@@ -76,10 +76,10 @@ void				print_unprotected(t_philo *this, char *s)
 
 void				print_log(t_philo *this, char *s)
 {
-	pthread_mutex_lock(this->print);
 	pthread_mutex_lock(&this->end->tid);
+	pthread_mutex_lock(this->print);
 	if (this->end->is_over == 0)
 		print_unprotected(this, s);
-	pthread_mutex_unlock(&this->end->tid);
 	pthread_mutex_unlock(this->print);
+	pthread_mutex_unlock(&this->end->tid);
 }
