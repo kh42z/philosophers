@@ -74,6 +74,7 @@ void					kill_philos(t_philos *p);
 int						awake_philos(t_philos *p);
 int						spawn_philos(t_args *args, t_philos *philos);
 void					delete_philos(t_philos *philos);
+suseconds_t 			min(suseconds_t i1, suseconds_t i2);
 t_philo					*new_philo(t_args *args, long started_at,
 						unsigned int i);
 #endif

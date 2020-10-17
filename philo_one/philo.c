@@ -23,35 +23,41 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
+	long 			latest;
+	long 			delta;
 
 	started_at = get_time_ms();
-	while (get_time_ms() - started_at < timer)
+	while ((latest = (delta =  get_time_ms()) - started_at) < timer)
 	{
-		err = usleep(1000);
+		if ((started_at + timer) - delta > 500)
+			delta = 500;
+		else
+			delta = delta - started_at;
+		err = usleep(delta);
 		if (err != 0)
 		{
-			print_log(this, "USLEEP FAILED");
+			add(this->log, this, "USLEEP FAILED\n");
 			return (1);
 		}
 	}
+	if (latest - (started_at + timer) >= 3)
+		add(this->log, this, "OVERLOAD\n");
 	return (0);
 }
 
-static void		think(t_philo *this)
+int			do_stuff(t_philo *this)
 {
-	print_log(this, "is thinking\n");
-	usleep(1000);
-}
+	int is_over;
 
-void			do_stuff(t_philo *this)
-{
+	is_over = 0;
 	if (this->action == EATING)
 	{
 		pthread_mutex_lock(&this->left->tid);
-		print_log(this, "has taken a fork\n");
+		if (add(this->log, this, "has taken a fork\n") == 1)
+			is_over = 1;
 		pthread_mutex_lock(&this->right->tid);
-		print_log(this, "has taken a fork\n");
-		print_log(this, "is eating\n");
+		add(this->log, this, "has taken a fork\n");
+		add(this->log, this, "is eating\n");
 		if (wait_ms(this, this->args.tt_eat) == 0)
 		{
 			pthread_mutex_lock(&this->eating);
@@ -65,32 +71,28 @@ void			do_stuff(t_philo *this)
 	}
 	if (this->action == SLEEPING)
 	{
-		print_log(this, "is sleeping\n");
+		add(this->log, this, "is sleeping\n");
 		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
-		think(this);
+		add(this->log, this, "is thinking\n");
+	return (is_over);
 }
 
 void			*do_next(void *v)
 {
 	t_philo		*this;
-	int			over;
 
 	this = (t_philo*)v;
 	pthread_mutex_lock(&this->started);
 	pthread_mutex_unlock(&this->eating);
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)
 	{
-		pthread_mutex_lock(&this->end->tid);
-		over = this->end->is_over;
-		pthread_mutex_unlock(&this->end->tid);
-		if (over == 1)
-			break ;
 		this->action++;
 		if (this->action > 2)
 			this->action = 0;
-		do_stuff(this);
+		if (do_stuff(this) == 1)
+			break;
 	}
 	return (this);
 }

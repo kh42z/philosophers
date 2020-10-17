@@ -26,24 +26,26 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
+	long 			latest;
+	long 			delta;
 
 	started_at = get_time_ms();
-	while (get_time_ms() - started_at < timer)
+	while ((latest = (delta = get_time_ms()) - started_at) < timer)
 	{
-		err = usleep(1000);
+		if ((started_at + timer) - delta > 500)
+			delta = 500;
+		else
+			delta = delta - started_at;
+		err = usleep(delta);
 		if (err != 0)
 		{
 			print_log(this, "USLEEP FAILED");
 			return (1);
 		}
 	}
+	if (latest - (started_at + timer) >= 2)
+		print_log(this, "OVERLOAD\n");
 	return (0);
-}
-
-static void		think(t_philo *this)
-{
-	print_log(this, "is thinking\n");
-	usleep(500);
 }
 
 void			do_stuff(t_philo *this)
@@ -72,7 +74,7 @@ void			do_stuff(t_philo *this)
 		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
-		think(this);
+		print_log(this, "is thinking\n");
 }
 
 void			*do_next(void *v)

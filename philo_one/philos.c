@@ -20,8 +20,7 @@ t_philo			*new_philo(t_args *args, t_forks *forks, unsigned int i)
 	if (p == NULL)
 		return (NULL);
 	memset(p, 0, sizeof(t_philo));
-	p->print = &args->log;
-	p->end = args->end;
+	p->log = args->log;
 	p->args = *args;
 	p->id = i + 1;
 	p->action = THINKING;
@@ -41,7 +40,6 @@ int				spawn_philos(t_args *args, t_philos *philos, t_forks *forks)
 {
 	int		i;
 
-	write(STDOUT_FILENO, "    Diner time...\n", 19);
 	philos->size = 0;
 	philos->philo = malloc(sizeof(t_philo*) * args->nb_of_philos);
 	if (!philos->philo)

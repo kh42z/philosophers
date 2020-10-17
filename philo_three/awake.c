@@ -27,7 +27,7 @@ static int		create_threads_philos(t_philos *p)
 							 is_he_dead, p->philo[i]);
 		if (err != 0)
 			return (err);
-		usleep(10000);
+		usleep(50);
 		i++;
 	}
 	return (0);
@@ -58,14 +58,13 @@ int				awake_philos(t_philos *p)
 
 	if (p->size == 0)
 		return (0);
-	write(STDOUT_FILENO, "    Warming up seats...\n", 24);
 	err = create_threads_philos(p);
 	if (err != 0)
 		return (1);
-	write(STDOUT_FILENO, "    Unleashing philosophers:\n", 29);
 	started_at = get_time_ms();
-	awake_mod_philos(p, 0, started_at);
 	awake_mod_philos(p, 1, started_at);
+	usleep(min(p->philo[0]->args.tt_die, p->philo[0]->args.tt_eat) * 500);
+	awake_mod_philos(p, 0, started_at);
 	return (0);
 }
 

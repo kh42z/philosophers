@@ -1,7 +1,7 @@
 NAME	= philo_one
 SRCS	= main.c
 SRCS	+= args.c
-SRCS	+= print.c
+SRCS	+= logger.c
 SRCS	+= forks.c
 SRCS	+= awake.c
 SRCS	+= time.c

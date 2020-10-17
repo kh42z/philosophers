@@ -12,12 +12,12 @@
 
 #include "philo.h"
 
-void			init_mutex(t_args *args, t_end *end)
+void			init_log(t_args *args, t_log *log)
 {
-	memset(end, 0, sizeof(t_end));
-	pthread_mutex_init(&args->log, NULL);
-	pthread_mutex_init(&end->tid, NULL);
-	args->end = end;
+	log->cursor = 0;
+	log->sim_over = 0;
+	pthread_mutex_init(&log->tid, NULL);
+	args->log = log;
 }
 
 int				error_msg(char *s)
@@ -36,11 +36,11 @@ int				main(int argc, char *argv[])
 	t_args				args;
 	t_philos			philos;
 	t_forks				forks;
-	t_end				end;
+	t_log				log;
 
 	if (argc < 5 || argc > 6 || parse_args(&args, argc, argv) == 1)
 		return (error_msg("Usage: ./philo_one 2 200 100 100"));
-	init_mutex(&args, &end);
+	init_log(&args, &log);
 	if (new_forks(&forks, args.nb_of_philos) != 0)
 		return (error_msg("Unable to create forks"));
 	if (spawn_philos(&args, &philos, &forks) != 0)
@@ -50,8 +50,7 @@ int				main(int argc, char *argv[])
 	}
 	awake_philos(&philos);
 	wait_philos(&philos);
-	pthread_mutex_destroy(&end.tid);
-	pthread_mutex_destroy(&args.log);
+	pthread_mutex_destroy(&log.tid);
 	delete_forks(&forks);
 	delete_philos(&philos);
 	return (0);
