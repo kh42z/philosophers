@@ -62,8 +62,8 @@ void			delete_philos(t_philos *philos)
 {
 	while (philos->size > 0)
 	{
-		pthread_mutex_destroy(&philos->philo[philos->size -1]->eating);
-		pthread_mutex_destroy(&philos->philo[philos->size -1]->started);
+		pthread_mutex_destroy(&philos->philo[philos->size - 1]->eating);
+		pthread_mutex_destroy(&philos->philo[philos->size - 1]->started);
 		free(philos->philo[philos->size - 1]);
 		--philos->size;
 	}

@@ -17,24 +17,19 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <string.h>
-
 # define BUFFER_SIZE 2048
+
 enum					e_actions {
 	THINKING,
 	EATING,
 	SLEEPING,
 };
 
-typedef struct			s_end {
+typedef struct			s_log {
 	pthread_mutex_t		tid;
-	int					is_over;
-}						t_end;
-
-typedef struct 			s_log {
-	pthread_mutex_t 	tid;
-	char 				b1[BUFFER_SIZE];
-	size_t 				cursor;
-	int 				sim_over;
+	char				b1[BUFFER_SIZE];
+	size_t				cursor;
+	int					sim_over;
 }						t_log;
 
 typedef struct			s_args {
@@ -50,7 +45,6 @@ typedef struct			s_fork {
 	pthread_mutex_t		tid;
 }						t_fork;
 
-
 typedef struct			s_philo {
 	unsigned int		id;
 	enum e_actions		action;
@@ -59,7 +53,7 @@ typedef struct			s_philo {
 	t_args				args;
 	t_fork				*left;
 	t_fork				*right;
-	pthread_mutex_t 	started;
+	pthread_mutex_t		started;
 	pthread_mutex_t		eating;
 	t_log				*log;
 	pthread_t			pid;
@@ -84,17 +78,19 @@ long					get_time_ms();
 void					print_log(t_philo *this, char *s);
 int						parse_args(t_args *args, int argc, char *argv[]);
 void					print_unprotected(t_philo *this, char *s);
-
+void					add_str(t_log *log, char *s);
+void					add_number(t_log *log, suseconds_t usec);
 void					wait_philos(t_philos *p);
 int						awake_philos(t_philos *p);
 int						new_forks(t_forks *forks, unsigned int number);
-suseconds_t 			min(suseconds_t i1, suseconds_t i2);
+suseconds_t				min(suseconds_t i1, suseconds_t i2);
 int						spawn_philos(t_args *args, t_philos *philos,
 						t_forks *forks);
 void					delete_forks(t_forks *forks);
-int					 	add(t_log *this, t_philo *p, char *s);
+int						add(t_log *this, t_philo *p, char *s);
 void					dump(t_log *this);
-void 					log_death(t_log *this, t_philo *p);
+void					log_death(t_log *this, t_philo *p);
 void					delete_philos(t_philos *philos);
-t_philo					*new_philo(t_args *args, t_forks *forks, unsigned int i);
+t_philo					*new_philo(t_args *args, t_forks *forks,
+						unsigned int i);
 #endif

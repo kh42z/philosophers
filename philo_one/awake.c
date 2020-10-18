@@ -33,7 +33,7 @@ static int		create_threads_philos(t_philos *p)
 	return (0);
 }
 
-static void 	awake_mod_philos(t_philos *p, int n, long started_at)
+static void		awake_mod_philos(t_philos *p, int n, long started_at)
 {
 	size_t		i;
 

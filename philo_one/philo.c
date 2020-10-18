@@ -23,17 +23,15 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
-	long 			latest;
-	long 			delta;
+	long			latest;
 
 	started_at = get_time_ms();
-	while ((latest = (delta =  get_time_ms()) - started_at) < timer)
+	while ((latest = get_time_ms()) - started_at < timer)
 	{
-		if ((started_at + timer) - delta > 500)
-			delta = 500;
+		if (latest - (started_at + timer) > 1)
+			err = usleep(1000);
 		else
-			delta = delta - started_at;
-		err = usleep(delta);
+			err = usleep(100);
 		if (err != 0)
 		{
 			add(this->log, this, "USLEEP FAILED\n");
@@ -45,7 +43,16 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	return (0);
 }
 
-int			do_stuff(t_philo *this)
+static void		ate(t_philo *this)
+{
+	pthread_mutex_lock(&this->eating);
+	this->ate_at = get_time_ms();
+	if (this->args.nb_of_must_eat > 0)
+		this->args.nb_of_must_eat--;
+	pthread_mutex_unlock(&this->eating);
+}
+
+int				do_stuff(t_philo *this)
 {
 	int is_over;
 
@@ -59,13 +66,7 @@ int			do_stuff(t_philo *this)
 		add(this->log, this, "has taken a fork\n");
 		add(this->log, this, "is eating\n");
 		if (wait_ms(this, this->args.tt_eat) == 0)
-		{
-			pthread_mutex_lock(&this->eating);
-			this->ate_at = get_time_ms();
-			if (this->args.nb_of_must_eat > 0)
-				this->args.nb_of_must_eat--;
-			pthread_mutex_unlock(&this->eating);
-		}
+			ate(this);
 		pthread_mutex_unlock(&this->right->tid);
 		pthread_mutex_unlock(&this->left->tid);
 	}
@@ -92,7 +93,7 @@ void			*do_next(void *v)
 		if (this->action > 2)
 			this->action = 0;
 		if (do_stuff(this) == 1)
-			break;
+			break ;
 	}
 	return (this);
 }
