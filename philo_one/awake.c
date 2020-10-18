@@ -27,7 +27,7 @@ static int		create_threads_philos(t_philos *p)
 				is_he_dead, p->philo[i]);
 		if (err != 0)
 			return (err);
-		usleep(1000);
+		usleep(10000);
 		i++;
 	}
 	return (0);
@@ -45,7 +45,7 @@ static void		awake_mod_philos(t_philos *p, int n, long started_at)
 			p->philo[i]->started_at = started_at;
 			p->philo[i]->ate_at = started_at;
 			pthread_mutex_unlock(&p->philo[i]->started);
-			usleep(50);
+			usleep(1000 / p->size);
 		}
 		i++;
 	}
@@ -68,7 +68,7 @@ int				awake_philos(t_philos *p)
 	return (0);
 }
 
-void			wait_philos(t_philos *p)
+void			wait_philos(t_philos *p, t_args *args)
 {
 	size_t			i;
 
@@ -78,10 +78,7 @@ void			wait_philos(t_philos *p)
 		pthread_join(p->philo[i]->pid, NULL);
 		i++;
 	}
-	if (p->size > 0)
-	{
-		pthread_mutex_lock(&p->philo[0]->log->tid);
-		p->philo[0]->log->sim_over = 1;
-		pthread_mutex_unlock(&p->philo[0]->log->tid);
-	}
+	pthread_mutex_lock(&args->log->tid);
+	args->log->sim_over = 1;
+	pthread_mutex_unlock(&args->log->tid);
 }

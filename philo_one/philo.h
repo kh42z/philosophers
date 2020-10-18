@@ -75,12 +75,13 @@ int						is_dead(t_philo *this);
 void					*do_next(void *v);
 
 long					get_time_ms();
+long 					get_time_us();
 void					print_log(t_philo *this, char *s);
 int						parse_args(t_args *args, int argc, char *argv[]);
 void					print_unprotected(t_philo *this, char *s);
 void					add_str(t_log *log, char *s);
 void					add_number(t_log *log, suseconds_t usec);
-void					wait_philos(t_philos *p);
+void					wait_philos(t_philos *p, t_args *args);
 int						awake_philos(t_philos *p);
 int						new_forks(t_forks *forks, unsigned int number);
 suseconds_t				min(suseconds_t i1, suseconds_t i2);
@@ -88,9 +89,9 @@ int						spawn_philos(t_args *args, t_philos *philos,
 						t_forks *forks);
 void					delete_forks(t_forks *forks);
 int						add(t_log *this, t_philo *p, char *s);
-void					dump(t_log *this);
 void					log_death(t_log *this, t_philo *p);
 void					delete_philos(t_philos *philos);
 t_philo					*new_philo(t_args *args, t_forks *forks,
 						unsigned int i);
+void 					empty_buffer(t_log *this);
 #endif

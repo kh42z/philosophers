@@ -14,10 +14,12 @@
 
 int				is_dead(t_philo *this)
 {
-	if (get_time_ms() - this->ate_at > this->args.tt_die)
+	if (get_time_ms() - this->ate_at >= this->args.tt_die)
 		return (1);
 	return (0);
 }
+
+#include <stdio.h>
 
 int				wait_ms(t_philo *this, suseconds_t timer)
 {
@@ -25,20 +27,20 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	long			started_at;
 	long			latest;
 
-	started_at = get_time_ms();
-	while ((latest = get_time_ms()) - started_at < timer)
+	started_at = get_time_us();
+	while ((latest = get_time_us()) - started_at < timer * 1000)
 	{
-		if (latest - (started_at + timer) > 1)
-			err = usleep(1000);
+		if ((started_at + timer * 1000) - latest > 1000)
+			err = usleep((started_at + (timer * 1000) - latest) / 2);
 		else
-			err = usleep(100);
+			err = usleep((started_at + (timer * 1000)) - latest);
 		if (err != 0)
 		{
 			add(this->log, this, "USLEEP FAILED\n");
 			return (1);
 		}
 	}
-	if (latest - (started_at + timer) >= 3)
+	if (latest - (started_at + timer * 1000) > 2000)
 		add(this->log, this, "OVERLOAD\n");
 	return (0);
 }
@@ -95,5 +97,6 @@ void			*do_next(void *v)
 		if (do_stuff(this) == 1)
 			break ;
 	}
+	pthread_join(this->watcher, NULL);
 	return (this);
 }

@@ -20,6 +20,14 @@ long			get_time_ms(void)
 	return (current.tv_sec * 1000 + current.tv_usec / 1000);
 }
 
+long 			get_time_us()
+{
+	struct timeval	current;
+
+	gettimeofday(&current, NULL);
+	return (current.tv_sec * 1000000 + current.tv_usec);
+}
+
 suseconds_t		min(suseconds_t i1, suseconds_t i2)
 {
 	if (i1 < i2)

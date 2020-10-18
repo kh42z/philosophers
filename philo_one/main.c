@@ -49,8 +49,8 @@ int				main(int argc, char *argv[])
 		return (error_msg("Unable to spawn philos"));
 	}
 	awake_philos(&philos);
-	wait_philos(&philos);
-	dump(&log);
+	wait_philos(&philos, &args);
+	empty_buffer(&log);
 	pthread_mutex_destroy(&log.tid);
 	delete_forks(&forks);
 	delete_philos(&philos);

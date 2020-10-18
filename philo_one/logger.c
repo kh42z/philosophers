@@ -12,12 +12,19 @@
 
 #include "philo.h"
 
-void				dump(t_log *this)
+static void				dump(t_log *this)
 {
 	if (this->cursor < BUFFER_SIZE / 2 && this->sim_over == 0)
 		return ;
 	write(STDOUT_FILENO, this->b1, this->cursor);
 	this->cursor = 0;
+}
+
+void 				empty_buffer(t_log *this)
+{
+	pthread_mutex_lock(&this->tid);
+	dump(this);
+	pthread_mutex_unlock(&this->tid);
 }
 
 static void			print(t_log *this, t_philo *p, char *s)
