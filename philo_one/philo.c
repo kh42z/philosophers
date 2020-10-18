@@ -19,8 +19,6 @@ int				is_dead(t_philo *this)
 	return (0);
 }
 
-#include <stdio.h>
-
 int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
