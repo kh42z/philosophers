@@ -20,14 +20,14 @@ static void				dump(t_log *this)
 	this->cursor = 0;
 }
 
-void 				empty_buffer(t_log *this)
+void					empty_buffer(t_log *this)
 {
 	pthread_mutex_lock(&this->tid);
 	dump(this);
 	pthread_mutex_unlock(&this->tid);
 }
 
-static void			print(t_log *this, t_philo *p, char *s)
+static void				print(t_log *this, t_philo *p, char *s)
 {
 	add_number(this, get_time_ms() - p->started_at);
 	add_number(this, p->id);
@@ -35,7 +35,7 @@ static void			print(t_log *this, t_philo *p, char *s)
 	dump(this);
 }
 
-int					add(t_log *this, t_philo *p, char *s)
+int						add(t_log *this, t_philo *p, char *s)
 {
 	pthread_mutex_lock(&this->tid);
 	if (this->sim_over == 1)
@@ -48,7 +48,7 @@ int					add(t_log *this, t_philo *p, char *s)
 	return (0);
 }
 
-void				log_death(t_log *this, t_philo *p)
+void					log_death(t_log *this, t_philo *p)
 {
 	pthread_mutex_lock(&this->tid);
 	if (this->sim_over == 1)

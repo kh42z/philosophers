@@ -26,10 +26,10 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 	long			latest;
 
 	started_at = get_time_us();
-	while ((latest = get_time_us()) - started_at < timer * 1000)
+	while ((latest = get_time_us()) - started_at <= timer * 1000)
 	{
 		if ((started_at + timer * 1000) - latest > 1000)
-			err = usleep((started_at + (timer * 1000) - latest) / 2);
+			err = usleep(1000);
 		else
 			err = usleep((started_at + (timer * 1000)) - latest);
 		if (err != 0)

@@ -20,7 +20,7 @@ long			get_time_ms(void)
 	return (current.tv_sec * 1000 + current.tv_usec / 1000);
 }
 
-long 			get_time_us()
+long			get_time_us(void)
 {
 	struct timeval	current;
 

@@ -17,7 +17,7 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <string.h>
-# define BUFFER_SIZE 2048
+# define BUFFER_SIZE 256
 
 enum					e_actions {
 	THINKING,
@@ -75,7 +75,7 @@ int						is_dead(t_philo *this);
 void					*do_next(void *v);
 
 long					get_time_ms();
-long 					get_time_us();
+long					get_time_us();
 void					print_log(t_philo *this, char *s);
 int						parse_args(t_args *args, int argc, char *argv[]);
 void					print_unprotected(t_philo *this, char *s);
@@ -93,5 +93,5 @@ void					log_death(t_log *this, t_philo *p);
 void					delete_philos(t_philos *philos);
 t_philo					*new_philo(t_args *args, t_forks *forks,
 						unsigned int i);
-void 					empty_buffer(t_log *this);
+void					empty_buffer(t_log *this);
 #endif
