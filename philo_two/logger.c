@@ -22,9 +22,9 @@ static void				dump(t_log *this)
 
 void					empty_buffer(t_log *this)
 {
-	pthread_mutex_lock(&this->tid);
+	sem_wait(this->tid);
 	dump(this);
-	pthread_mutex_unlock(&this->tid);
+	sem_post(this->tid);
 }
 
 static void				print(t_log *this, t_philo *p, char *s)
@@ -40,29 +40,29 @@ int						add(t_log *this, t_philo *p, char *s)
 	long			start;
 
 	start = get_time_ms();
-	pthread_mutex_lock(&this->tid);
+	sem_wait(this->tid);
 	if (this->sim_over == 1)
 	{
-		pthread_mutex_unlock(&this->tid);
+		sem_post(this->tid);
 		return (1);
 	}
 	print(this, p, s);
 	if (get_time_ms() - start > 3)
 		print(this, p, "SLOW PRINT");
-	pthread_mutex_unlock(&this->tid);
+	sem_post(this->tid);
 	return (0);
 }
 
 void					log_death(t_log *this, t_philo *p)
 {
-	pthread_mutex_lock(&this->tid);
+	sem_wait(this->tid);
 	if (this->sim_over == 1)
 	{
-		pthread_mutex_unlock(&this->tid);
+		sem_post(this->tid);
 		return ;
 	}
 	print(this, p, "died\n");
 	this->sim_over = 1;
 	dump(this);
-	pthread_mutex_unlock(&this->tid);
+	sem_post(this->tid);
 }

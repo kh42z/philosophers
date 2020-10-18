@@ -48,11 +48,11 @@ int				wait_ms(t_philo *this, suseconds_t timer)
 
 static void		reset_eat_timer(t_philo *this)
 {
-	pthread_mutex_lock(&this->eating);
+	sem_wait(this->eating);
 	this->ate_at = get_time_ms();
 	if (this->args.nb_of_must_eat > 0)
 		this->args.nb_of_must_eat--;
-	pthread_mutex_unlock(&this->eating);
+	sem_post(this->eating);
 }
 
 int				do_stuff(t_philo *this)
@@ -62,16 +62,16 @@ int				do_stuff(t_philo *this)
 	is_over = 0;
 	if (this->action == EATING)
 	{
-		pthread_mutex_lock(&this->left->tid);
+		sem_wait(this->forks);
 		if (add(this->log, this, "has taken a fork\n") == 1)
 			is_over = 1;
-		pthread_mutex_lock(&this->right->tid);
+		sem_wait(this->forks);
 		add(this->log, this, "has taken a fork\n");
 		reset_eat_timer(this);
 		add(this->log, this, "is eating\n");
 		wait_ms(this, this->args.tt_eat);
-		pthread_mutex_unlock(&this->right->tid);
-		pthread_mutex_unlock(&this->left->tid);
+		sem_post(this->forks);
+		sem_post(this->forks);
 	}
 	if (this->action == SLEEPING)
 	{
@@ -88,8 +88,8 @@ void			*do_next(void *v)
 	t_philo		*this;
 
 	this = (t_philo*)v;
-	pthread_mutex_lock(&this->started);
-	pthread_mutex_unlock(&this->eating);
+	sem_wait(this->started);
+	sem_post(this->eating);
 	while (is_dead(this) == 0 && this->args.nb_of_must_eat != 0)
 	{
 		this->action++;
