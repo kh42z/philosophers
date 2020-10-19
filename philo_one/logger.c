@@ -48,7 +48,7 @@ int						add(t_log *this, t_philo *p, char *s)
 	}
 	print(this, p, s);
 	if (get_time_ms() - start > 3)
-		print(this, p, "SLOW PRINT");
+		print(this, p, "SLOW PRINT\n");
 	pthread_mutex_unlock(&this->tid);
 	return (0);
 }
