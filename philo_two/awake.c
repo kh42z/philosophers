@@ -62,9 +62,9 @@ int				awake_philos(t_philos *p)
 	if (err != 0)
 		return (1);
 	started_at = get_time_ms();
-	awake_mod_philos(p, 1, started_at);
-	usleep(min(p->philo[0]->args.tt_die, p->philo[0]->args.tt_eat) * 500);
 	awake_mod_philos(p, 0, started_at);
+	usleep(min(p->philo[0]->args.tt_die, p->philo[0]->args.tt_eat) * 500);
+	awake_mod_philos(p, 1, started_at);
 	return (0);
 }
 

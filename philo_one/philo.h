@@ -17,7 +17,7 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <string.h>
-# define BUFFER_SIZE 8192
+# define BUFFER_SIZE 1024
 
 enum					e_actions {
 	THINKING,

@@ -27,6 +27,20 @@ void					empty_buffer(t_log *this)
 	sem_post(this->tid);
 }
 
+static void 			slowlog(t_log *this, t_philo *p,
+					   char *s, suseconds_t lock, suseconds_t write)
+{
+	add_number(this, get_time_ms() - p->started_at);
+	add_number(this, p->id);
+	add_str(this, s);
+	add_number(this, lock);
+	if (BUFFER_SIZE - this->cursor < 10)
+		dump(this);
+	add_number(this, write);
+	this->b1[this->cursor++] = '\n';
+	dump(this);
+}
+
 static void				print(t_log *this, t_philo *p, char *s)
 {
 	add_number(this, get_time_ms() - p->started_at);
@@ -38,6 +52,8 @@ static void				print(t_log *this, t_philo *p, char *s)
 int						add(t_log *this, t_philo *p, char *s)
 {
 	long			start;
+	long 			lock_timer;
+	long 			write_timer;
 
 	start = get_time_ms();
 	sem_wait(this->tid);
@@ -46,9 +62,11 @@ int						add(t_log *this, t_philo *p, char *s)
 		sem_post(this->tid);
 		return (1);
 	}
+	if ((lock_timer = get_time_ms()) - start > 3)
+		slowlog(this, p, "SLOW PRINT LOCK ", lock_timer - start, 0);
 	print(this, p, s);
-	if (get_time_ms() - start > 3)
-		print(this, p, "SLOW PRINT");
+	if ((write_timer = get_time_ms()) - start > 3)
+		slowlog(this, p, "SLOW PRINT WRITE ", lock_timer - start, write_timer - start);
 	sem_post(this->tid);
 	return (0);
 }

@@ -79,7 +79,11 @@ int				do_stuff(t_philo *this)
 		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
+	{
 		add(this->log, this, "is thinking\n");
+		if (this->args.nb_of_philos % 2 == 1)
+			usleep(500);
+	}
 	return (is_over);
 }
 

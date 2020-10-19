@@ -20,7 +20,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 
-# define BUFFER_SIZE 512
+# define BUFFER_SIZE 1024
 # define SEM_LOG	"/philo_log"
 # define SEM_FORKS	"/philo_forks"
 
