@@ -12,6 +12,13 @@
 
 #include "philo.h"
 
+int				is_dead(t_philo *this)
+{
+	if (get_time_ms() - this->ate_at > this->args.tt_die)
+		return (1);
+	return (0);
+}
+
 sem_t			*create_sem(t_philo *this, char prefix)
 {
 	static char		name[255];

@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-int			init_sem(t_args *args, t_log *log)
+int				init_sem(t_args *args, t_log *log)
 {
 	log->cursor = 0;
 	log->sim_over = 0;
@@ -35,6 +35,13 @@ int				error_msg(char *s)
 		i++;
 	write(STDERR_FILENO, s, i);
 	return (1);
+}
+
+void			empty_buffer(t_log *this)
+{
+	sem_wait(this->tid);
+	dump(this);
+	sem_post(this->tid);
 }
 
 int				main(int argc, char *argv[])

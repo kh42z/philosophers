@@ -31,7 +31,7 @@ enum					e_actions {
 };
 
 typedef struct			s_log {
-	sem_t 				*tid;
+	sem_t				*tid;
 	char				b1[BUFFER_SIZE];
 	size_t				cursor;
 	int					sim_over;
@@ -70,6 +70,7 @@ void					*is_he_dead(void *this);
 int						is_dead(t_philo *this);
 void					*do_next(void *v);
 
+void					dump(t_log *this);
 long					get_time_ms();
 long					get_time_us();
 void					print_log(t_philo *this, char *s);

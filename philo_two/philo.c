@@ -12,13 +12,6 @@
 
 #include "philo.h"
 
-int				is_dead(t_philo *this)
-{
-	if (get_time_ms() - this->ate_at > this->args.tt_die)
-		return (1);
-	return (0);
-}
-
 int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
@@ -55,6 +48,13 @@ static void		reset_eat_timer(t_philo *this)
 	sem_post(this->eating);
 }
 
+static void		think(t_philo *this)
+{
+	add(this->log, this, "is thinking\n");
+	if (this->args.nb_of_philos % 2 == 1)
+		usleep(500);
+}
+
 int				do_stuff(t_philo *this)
 {
 	int is_over;
@@ -79,11 +79,7 @@ int				do_stuff(t_philo *this)
 		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
-	{
-		add(this->log, this, "is thinking\n");
-		if (this->args.nb_of_philos % 2 == 1)
-			usleep(500);
-	}
+		think(this);
 	return (is_over);
 }
 
