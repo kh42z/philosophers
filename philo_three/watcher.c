@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tterrail <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/15 11:14:40 by tterrail          #+#    #+#             */
-/*   Updated: 2020/10/15 11:14:40 by tterrail         ###   ########.fr       */
+/*   Created: 2020/10/14 11:14:22 by tterrail          #+#    #+#             */
+/*   Updated: 2020/10/14 11:14:22 by tterrail         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,6 @@ pthread_t			create_watcher(t_args *args)
 	return (pid);
 }
 
-static void			announce_death(t_philo *this)
-{
-	sem_wait(this->args.log);
-	print_unprotected(this, "died\n");
-	sem_post(this->args.end);
-}
-
 void				*is_he_dead(void *philo)
 {
 	t_philo	*this;
@@ -58,7 +51,8 @@ void				*is_he_dead(void *philo)
 			break ;
 		if (is_dead(this) == 1)
 		{
-			announce_death(this);
+			log_death(this->log, this);
+			sem_post(this->args.end);
 			break ;
 		}
 		sem_post(this->eating);

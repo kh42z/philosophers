@@ -1,6 +1,7 @@
 NAME	= philo_three
 SRCS	= main.c
 SRCS	+= args.c
+SRCS	+= logger.c
 SRCS	+= print.c
 SRCS	+= awake.c
 SRCS	+= time.c

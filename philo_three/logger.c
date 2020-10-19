@@ -14,8 +14,6 @@
 
 void					dump(t_log *this)
 {
-	if (this->cursor < BUFFER_SIZE / 2 && this->sim_over == 0)
-		return ;
 	write(STDOUT_FILENO, this->b1, this->cursor);
 	this->cursor = 0;
 }
@@ -27,8 +25,6 @@ static void				slowlog(t_log *this, t_philo *p,
 	add_number(this, p->id);
 	add_str(this, "SLOW WRITE ");
 	add_number(this, lock);
-	if (BUFFER_SIZE - this->cursor < 10)
-		dump(this);
 	add_number(this, write);
 	this->b1[this->cursor++] = '\n';
 	dump(this);
@@ -50,11 +46,6 @@ int						add(t_log *this, t_philo *p, char *s)
 
 	start = get_time_ms();
 	sem_wait(this->tid);
-	if (this->sim_over == 1)
-	{
-		sem_post(this->tid);
-		return (1);
-	}
 	lock_timer = get_time_ms();
 	print(this, p, s);
 	if ((write_timer = get_time_ms()) - start > 3)
@@ -67,13 +58,6 @@ int						add(t_log *this, t_philo *p, char *s)
 void					log_death(t_log *this, t_philo *p)
 {
 	sem_wait(this->tid);
-	if (this->sim_over == 1)
-	{
-		sem_post(this->tid);
-		return ;
-	}
 	print(this, p, "died\n");
-	this->sim_over = 1;
 	dump(this);
-	sem_post(this->tid);
 }

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: tterrail <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/12 16:46:04 by tterrail          #+#    #+#             */
-/*   Updated: 2020/10/12 16:46:04 by tterrail         ###   ########.fr       */
+/*   Created: 2020/10/18 10:26:40 by tterrail          #+#    #+#             */
+/*   Updated: 2020/10/18 10:26:40 by tterrail         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,41 +42,33 @@ static size_t		number_size(suseconds_t usec)
 	return (t);
 }
 
-void				print_number(suseconds_t usec)
+void				add_number(t_log *log, suseconds_t usec)
 {
 	size_t			t;
 	size_t			c;
-	static char		buff[1024];
 
 	t = number_size(usec);
-	if (t > 1022)
-		t = 1022;
+	if (t + log->cursor >= BUFFER_SIZE)
+		t = BUFFER_SIZE - (log->cursor + 1);
 	c = t;
 	while (t > 0)
 	{
-		buff[c - t] = ((usec / power10(t)) % 10) + 48;
+		log->b1[log->cursor + c - t] = ((usec / power10(t)) % 10) + 48;
 		--t;
 	}
-	buff[c] = ' ';
-	buff[c + 1] = '\0';
-	write(STDOUT_FILENO, buff, c + 1);
+	log->b1[log->cursor + c] = ' ';
+	log->cursor += c + 1;
 }
 
-void				print_unprotected(t_philo *this, char *s)
+void				add_str(t_log *log, char *s)
 {
 	size_t		i;
 
 	i = 0;
 	while (s[i])
+	{
+		log->b1[log->cursor] = s[i];
 		i++;
-	print_number(get_time_ms() - this->started_at);
-	print_number(this->id);
-	write(STDOUT_FILENO, s, i);
-}
-
-void				print_log(t_philo *this, char *s)
-{
-	sem_wait(this->args.log);
-	print_unprotected(this, s);
-	sem_post(this->args.log);
+		log->cursor++;
+	}
 }

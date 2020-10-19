@@ -12,7 +12,14 @@
 
 #include "philo.h"
 
-sem_t			*create_mutex(t_philo *this, char prefix)
+int				is_dead(t_philo *this)
+{
+	if (get_time_ms() - this->ate_at > this->args.tt_die)
+		return (1);
+	return (0);
+}
+
+sem_t			*create_sem(t_philo *this, char prefix)
 {
 	static char		name[255];
 	int				i;
@@ -33,8 +40,8 @@ sem_t			*create_mutex(t_philo *this, char prefix)
 	return (sem_open(name, O_CREAT, 0660, 0));
 }
 
-t_philo			*new_philo(t_args *args, long started_at,
-							  unsigned int i)
+t_philo			*new_philo(t_args *args, suseconds_t started_at,
+					unsigned int i)
 {
 	t_philo *p;
 
@@ -42,14 +49,15 @@ t_philo			*new_philo(t_args *args, long started_at,
 	if (p == NULL)
 		return (NULL);
 	memset(p, 0, sizeof(t_philo));
-	p->forks = args->forks;
+	p->started_at = started_at;
+	p->ate_at = started_at;
+	p->log = args->log;
 	p->args = *args;
 	p->id = i + 1;
 	p->action = THINKING;
-	p->ate_at = started_at;
-	p->started_at = started_at;
-	p->eating = create_mutex(p, 'e');
-	p->started = create_mutex(p, 's');
+	p->forks = args->forks;
+	p->eating = create_sem(p, 'e');
+	p->started = create_sem(p, 's');
 	if (p->eating == SEM_FAILED || p->started == SEM_FAILED)
 	{
 		free(p);
@@ -60,8 +68,8 @@ t_philo			*new_philo(t_args *args, long started_at,
 
 int				spawn_philos(t_args *args, t_philos *philos)
 {
-	int		i;
-	long	started_at;
+	int				i;
+	suseconds_t		started_at;
 
 	philos->size = 0;
 	started_at = get_time_ms();
@@ -91,4 +99,5 @@ void			delete_philos(t_philos *philos)
 		free(philos->philo[philos->size - 1]);
 		--philos->size;
 	}
+	free(philos->philo);
 }

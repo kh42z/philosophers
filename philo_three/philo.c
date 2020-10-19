@@ -12,61 +12,75 @@
 
 #include "philo.h"
 
-int				is_dead(t_philo *this)
-{
-	long c;
-
-	c = get_time_ms();
-	if (c - this->ate_at > this->args.tt_die)
-		return (1);
-	return (0);
-}
-
 int				wait_ms(t_philo *this, suseconds_t timer)
 {
 	int				err;
 	long			started_at;
+	long			latest;
 
-	started_at = get_time_ms();
-	while (get_time_ms() - started_at < timer)
+	started_at = get_time_us();
+	while ((latest = get_time_us()) - started_at <= timer * 1000)
 	{
-		err = usleep(1000);
+		if ((started_at + timer * 1000) - latest > 1000)
+			err = usleep(1000);
+		else
+			err = usleep((started_at + (timer * 1000)) - latest);
 		if (err != 0)
 		{
-			print_log(this, "USLEEP FAILED");
+			add(this->log, this, "USLEEP FAILED\n");
 			return (1);
 		}
+	}
+	if (latest - (started_at + timer * 1000) > 2000)
+	{
+		add(this->log, this, "USLEEP OVERLOAD\n");
+		return (1);
 	}
 	return (0);
 }
 
-void			do_stuff(t_philo *this)
+static void		reset_eat_timer(t_philo *this)
 {
+	sem_wait(this->eating);
+	this->ate_at = get_time_ms();
+	if (this->args.nb_of_must_eat > 0)
+		this->args.nb_of_must_eat--;
+	sem_post(this->eating);
+}
+
+static void		think(t_philo *this)
+{
+	add(this->log, this, "is thinking\n");
+	if (this->args.nb_of_philos % 2 == 1)
+		usleep(500);
+}
+
+int				do_stuff(t_philo *this)
+{
+	int is_over;
+
+	is_over = 0;
 	if (this->action == EATING)
 	{
 		sem_wait(this->forks);
-		print_log(this, "has taken a fork\n");
+		if (add(this->log, this, "has taken a fork\n") == 1)
+			is_over = 1;
 		sem_wait(this->forks);
-		print_log(this, "has taken a fork\n");
-		print_log(this, "is eating\n");
-		if (wait_ms(this, this->args.tt_eat) == 0)
-		{
-			sem_wait(this->eating);
-			this->ate_at = get_time_ms();
-			if (this->args.nb_of_must_eat > 0)
-				this->args.nb_of_must_eat--;
-			sem_post(this->eating);
-		}
+		add(this->log, this, "has taken a fork\n");
+		reset_eat_timer(this);
+		add(this->log, this, "is eating\n");
+		wait_ms(this, this->args.tt_eat);
 		sem_post(this->forks);
 		sem_post(this->forks);
 	}
 	if (this->action == SLEEPING)
 	{
-		print_log(this, "is sleeping\n");
+		add(this->log, this, "is sleeping\n");
 		wait_ms(this, this->args.tt_sleep);
 	}
 	if (this->action == THINKING)
-		print_log(this, "is thinking\n");
+		think(this);
+	return (is_over);
 }
 
 void			*do_next(void *v)
@@ -81,9 +95,9 @@ void			*do_next(void *v)
 		this->action++;
 		if (this->action > 2)
 			this->action = 0;
-		do_stuff(this);
+		if (do_stuff(this) == 1)
+			break ;
 	}
 	pthread_join(this->watcher, NULL);
-	sem_post(this->args.done);
 	return (this);
 }
