@@ -48,7 +48,10 @@ void				*is_he_dead(void *philo)
 	{
 		sem_wait(this->eating);
 		if (this->args.nb_of_must_eat == 0)
+		{
+			sem_post(this->args.done);
 			break ;
+		}
 		if (is_dead(this) == 1)
 		{
 			log_death(this->log, this);
